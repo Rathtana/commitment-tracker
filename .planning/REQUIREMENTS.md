@@ -97,37 +97,37 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | TBD | Pending |
-| AUTH-02 | TBD | Pending |
-| AUTH-03 | TBD | Pending |
-| AUTH-04 | TBD | Pending |
-| AUTH-05 | TBD | Pending |
-| GOAL-01 | TBD | Pending |
-| GOAL-02 | TBD | Pending |
-| GOAL-03 | TBD | Pending |
-| GOAL-04 | TBD | Pending |
-| GOAL-05 | TBD | Pending |
-| PROG-01 | TBD | Pending |
-| PROG-02 | TBD | Pending |
-| PROG-03 | TBD | Pending |
-| PROG-04 | TBD | Pending |
-| PROG-05 | TBD | Pending |
-| DASH-01 | TBD | Pending |
-| DASH-02 | TBD | Pending |
-| MNAV-01 | TBD | Pending |
-| MNAV-02 | TBD | Pending |
-| MNAV-03 | TBD | Pending |
-| MNAV-04 | TBD | Pending |
-| POLSH-01 | TBD | Pending |
-| POLSH-02 | TBD | Pending |
-| POLSH-03 | TBD | Pending |
-| POLSH-04 | TBD | Pending |
+| AUTH-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Pending |
+| AUTH-04 | Phase 1 | Pending |
+| AUTH-05 | Phase 1 | Pending |
+| GOAL-01 | Phase 2 | Pending |
+| GOAL-02 | Phase 2 | Pending |
+| GOAL-03 | Phase 2 | Pending |
+| GOAL-04 | Phase 1 | Pending |
+| GOAL-05 | Phase 3 | Pending |
+| PROG-01 | Phase 2 | Pending |
+| PROG-02 | Phase 2 | Pending |
+| PROG-03 | Phase 2 | Pending |
+| PROG-04 | Phase 2 | Pending |
+| PROG-05 | Phase 2 | Pending |
+| DASH-01 | Phase 2 | Pending |
+| DASH-02 | Phase 2 | Pending |
+| MNAV-01 | Phase 3 | Pending |
+| MNAV-02 | Phase 3 | Pending |
+| MNAV-03 | Phase 3 | Pending |
+| MNAV-04 | Phase 3 | Pending |
+| POLSH-01 | Phase 4 | Pending |
+| POLSH-02 | Phase 4 | Pending |
+| POLSH-03 | Phase 2 | Pending |
+| POLSH-04 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 25 total
-- Mapped to phases: 0 (filled by roadmapper)
-- Unmapped: 25 ⚠️
+- Mapped to phases: 25 ✓
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-17*
-*Last updated: 2026-04-17 after initial definition*
+*Last updated: 2026-04-17 after roadmap creation (traceability table populated)*
