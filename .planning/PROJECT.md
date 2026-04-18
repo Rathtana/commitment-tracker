@@ -27,7 +27,7 @@ The visual feedback has to feel good enough that users *want* to open the dashbo
 - [ ] Dashboard shows all current-month goals at a glance with visual progress bars
 - [ ] User can view past months' goals read-only
 - [ ] User can pre-set goals for future months (not restricted to current month)
-- [ ] Current month's goals persist until the user sets new ones for the next month
+- [ ] On the 1st, the new-month dashboard starts blank unless the user pre-set goals or copies from last month
 
 ### Out of Scope
 
