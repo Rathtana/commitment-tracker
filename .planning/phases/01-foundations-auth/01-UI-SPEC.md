@@ -1,10 +1,11 @@
 ---
 phase: 1
 slug: foundations-auth
-status: draft
+status: approved
 shadcn_initialized: true
 preset: new-york / zinc base
 created: 2026-04-17
+reviewed_at: 2026-04-17
 ---
 
 # Phase 1 — UI Design Contract
