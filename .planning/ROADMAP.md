@@ -29,7 +29,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can request a password reset via email, use the link once within 15 minutes, and successfully set a new password
   4. The `goals` table exists with a `month DATE` column whose CHECK constraint rejects any value not pinned to the first of a month
   5. Logging a timestamp at 11:30 PM local on the last day of a month buckets it to that month (not the next) regardless of UTC offset, validated by a DST/month-boundary test suite
-**Plans**: TBD
+**Plans**: 5 plans
+- [ ] 01-01-PLAN.md — Scaffold Next.js 16 + shadcn + Tailwind v4 + Vitest + Drizzle config + Supabase project checkpoint
+- [ ] 01-02-PLAN.md — Pure isomorphic `today()` + `monthBucket()` with D-23 Vitest fixture suite (timezone, DST, leap year, NYE)
+- [ ] 01-03-PLAN.md — Drizzle schema (public.users + goals) + RLS policies + custom SQL migration (CHECK + trigger) + `supabase db push` [BLOCKING] + RLS stub test
+- [ ] 01-04-PLAN.md — `@supabase/ssr` middleware + `/auth/callback` route handler + shared Zod schemas + 5 server actions (signup/signin/signout/reset/update)
+- [ ] 01-05-PLAN.md — 6 auth surfaces (login/signup/reset/reset-complete/verify/error) + landing stub + password toggle + manual UAT checkpoint
 **UI hint**: yes
 
 ### Phase 2: Goals & Dashboard (Three Types)
@@ -76,11 +81,12 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundations & Auth | 0/TBD | Not started | - |
+| 1. Foundations & Auth | 0/5 | Planned | - |
 | 2. Goals & Dashboard (Three Types) | 0/TBD | Not started | - |
 | 3. Month Navigation, History & Reflection | 0/TBD | Not started | - |
 | 4. Launch Polish | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-04-17*
+*Phase 1 planned: 2026-04-17 — 5 plans across 4 waves*
 *Coverage: 25/25 v1 requirements mapped*
