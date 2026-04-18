@@ -1,0 +1,75 @@
+/* src/app/globals.css */
+@import "tailwindcss";
+
+@theme {
+  /* --- Font --- */
+  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+
+  /* --- Spacing (8-point scale) --- */
+  --spacing-xs:  4px;
+  --spacing-sm:  8px;
+  --spacing-md:  16px;
+  --spacing-lg:  24px;
+  --spacing-xl:  32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+
+  /* --- Light mode palette --- */
+  --color-background:    oklch(99% 0 0);         /* zinc-50 near-white */
+  --color-foreground:    oklch(15% 0.006 265);    /* zinc-900 */
+
+  --color-card:          oklch(100% 0 0);         /* white */
+  --color-card-foreground: oklch(15% 0.006 265);  /* zinc-900 */
+
+  --color-muted:         oklch(96% 0.003 240);    /* zinc-100 */
+  --color-muted-foreground: oklch(50% 0.010 260); /* zinc-500 */
+
+  --color-border:        oklch(89% 0.006 258);    /* zinc-200 */
+  --color-input:         oklch(89% 0.006 258);    /* zinc-200 */
+
+  --color-primary:       oklch(54% 0.155 161);    /* emerald-600 */
+  --color-primary-hover: oklch(60% 0.146 162);    /* emerald-500 (lighter = hover) */
+  --color-primary-pressed: oklch(46% 0.160 159);  /* emerald-700 (darker = pressed) */
+  --color-primary-foreground: oklch(99% 0 0);     /* white */
+
+  --color-ring:          oklch(73% 0.131 162);    /* emerald-400 — focus ring */
+
+  --color-destructive:   oklch(58% 0.215 27);     /* red-600 */
+  --color-destructive-foreground: oklch(99% 0 0); /* white */
+  --color-destructive-muted: oklch(97% 0.013 20); /* red-50 — error field bg tint */
+
+  --color-secondary:     oklch(96% 0.003 240);    /* zinc-100 */
+  --color-secondary-foreground: oklch(15% 0.006 265); /* zinc-900 */
+}
+
+/* Dark mode overrides — prefers-color-scheme only, no toggle */
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-background:    oklch(11% 0.005 260);    /* zinc-950 */
+    --color-foreground:    oklch(96% 0.003 240);    /* zinc-100 */
+
+    --color-card:          oklch(15% 0.006 265);    /* zinc-900 */
+    --color-card-foreground: oklch(96% 0.003 240);  /* zinc-100 */
+
+    --color-muted:         oklch(20% 0.007 260);    /* zinc-800 */
+    --color-muted-foreground: oklch(63% 0.010 258); /* zinc-400 */
+
+    --color-border:        oklch(27% 0.008 258);    /* zinc-700 */
+    --color-input:         oklch(27% 0.008 258);    /* zinc-700 */
+
+    --color-primary:       oklch(60% 0.146 162);    /* emerald-500 (lighter in dark for contrast) */
+    --color-primary-hover: oklch(66% 0.137 162);    /* emerald-400 */
+    --color-primary-pressed: oklch(54% 0.155 161);  /* emerald-600 */
+    --color-primary-foreground: oklch(11% 0.005 260); /* zinc-950 — dark text on light emerald */
+
+    --color-ring:          oklch(73% 0.131 162);    /* emerald-400 — same in dark (sufficient contrast) */
+
+    --color-destructive:   oklch(65% 0.210 25);     /* red-500 (lighter in dark) */
+    --color-destructive-foreground: oklch(11% 0.005 260);
+    --color-destructive-muted: oklch(20% 0.030 25); /* red-950 tint */
+
+    --color-secondary:     oklch(20% 0.007 260);    /* zinc-800 */
+    --color-secondary-foreground: oklch(96% 0.003 240);
+  }
+}
