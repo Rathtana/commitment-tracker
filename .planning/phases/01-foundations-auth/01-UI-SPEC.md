@@ -182,13 +182,14 @@ Exceptions:
 | Role | Size | Weight | Line Height | Font | Usage |
 |------|------|--------|-------------|------|-------|
 | Page heading (h1) | 24px (1.5rem) | 600 (semibold) | 1.2 | Geist | Auth page title ("Create your account", "Sign in") |
-| Label / UI text | 14px (0.875rem) | 500 (medium) | 1.4 | Geist | Form field labels, button text, nav links |
+| Label / UI text | 14px (0.875rem) | 600 (semibold) | 1.4 | Geist | Form field labels, button text, nav links |
 | Body | 16px (1rem) | 400 (regular) | 1.5 | Geist | Placeholder-supporting text, helper copy, card body |
-| Caption / muted | 13px (0.8125rem) | 400 (regular) | 1.4 | Geist | Error messages under fields, footnote copy, "Already have an account?" links |
+| Caption / muted | 12px (0.75rem) | 400 (regular) | 1.4 | Geist | Error messages under fields, footnote copy, "Already have an account?" links |
 
 Notes:
-- Exactly 4 sizes declared (24 / 16 / 14 / 13). No additional sizes introduced in Phase 1.
-- Exactly 2 weights declared (400 regular, 600 semibold). Medium (500) used only for label/button — if the design system collapses to 2 weights, label/button inherits 600.
+- Exactly 4 sizes declared (24 / 16 / 14 / 12). No additional sizes introduced in Phase 1.
+- Exactly 2 weights declared: 400 (regular) for body and caption roles; 600 (semibold) for headings, labels, and UI text.
+- Button text uses weight 600 (semibold) consistent with the label role.
 - Numeric tabular figures: apply `tabular-nums` Tailwind class anywhere numbers render (reserved for Phase 2 count goals; no numeric content in Phase 1 auth surfaces, but class pattern is established here).
 - Geist is a variable font; `font-variation-settings` is not needed — weight is set via `font-weight` as normal.
 
@@ -253,7 +254,9 @@ See "Per-Surface Contract" section below for exact headings, field labels, place
 
 Button height: 40px default (`h-10`). All buttons on auth pages use `w-full` (full width of card content area).
 
-Secondary/ghost buttons (e.g. "Back to sign in" as a link-button): `variant="ghost"` with `text-muted-foreground` at 14px. No background fill.
+Button text weight: 600 (semibold), consistent with the label/UI text role.
+
+Secondary/ghost buttons (e.g. "Back to sign in" as a link-button): `variant="ghost"` with `text-muted-foreground` at 14px, weight 600. No background fill.
 
 ### Form Field States
 
@@ -261,7 +264,7 @@ Secondary/ghost buttons (e.g. "Back to sign in" as a link-button): `variant="gho
 |-------|--------|------------|-------------------|
 | Default | `--color-border` (zinc-200 / zinc-700) | `--color-foreground` | — |
 | Focus | emerald-400 ring (2px, via focus-visible) | unchanged | — |
-| Error | `border-destructive` (red-600) + `ring-destructive/30` | unchanged | `text-destructive` 13px below field via `<FormMessage>` |
+| Error | `border-destructive` (red-600) + `ring-destructive/30` | unchanged | `text-destructive` 12px below field via `<FormMessage>` |
 | Disabled | `opacity-50`, `cursor-not-allowed` | `opacity-50` | — |
 | Valid (after submit) | resets to default | unchanged | — |
 
@@ -341,6 +344,8 @@ Each page must have:
 
 ### Auth Pages (all 5 auth forms)
 
+Primary focal point (all auth surfaces): the `<CardTitle>` h1 — 24px semibold — positioned as the first element inside the card. The single element a user reads first on every auth page.
+
 ```
 [viewport — bg-background]
   │
@@ -349,8 +354,8 @@ Each page must have:
        └─ <Card> — w-full max-w-sm (384px) — shadow-sm, rounded-xl, border border-border
             │
             ├─ <CardHeader> — px-6 pt-6 pb-0
-            │   ├─ App wordmark/logo (text only in Phase 1 — "Commitment Tracker" at 13px muted)
-            │   ├─ <CardTitle> (h1) — 24px semibold — page title
+            │   ├─ App wordmark/logo (text only in Phase 1 — "Commitment Tracker" at 12px muted)
+            │   ├─ <CardTitle> (h1) — 24px semibold — page title  ← PRIMARY FOCAL POINT
             │   └─ Optional subtitle — 14px muted-foreground
             │
             └─ <CardContent> — px-6 py-6
@@ -364,7 +369,7 @@ Each page must have:
                  │   └─ <Button type="submit" className="w-full mt-2"> [primary CTA]
                  │
                  └─ Secondary links (e.g. "Already have an account? Sign in")
-                      — text-sm, text-center, text-muted-foreground, mt-4
+                      — text-xs (12px), text-center, text-muted-foreground, mt-4
 ```
 
 - Card: `max-w-sm` (384px) — not `max-w-md` — keeps auth forms compact and focused.
@@ -471,7 +476,7 @@ Auth layout does not change substantially at tablet/desktop — centered card is
 | Forgot password link | Forgot your password? |
 | Footer link | Don't have an account? Sign up |
 
-**Forgot password link:** 13px, `text-muted-foreground`, right-aligned inline with the Password label row (sits between the label and the input — or below the input as a small right-aligned link). Links to `/auth/reset`.
+**Forgot password link:** 12px, `text-muted-foreground`, right-aligned inline with the Password label row (sits between the label and the input — or below the input as a small right-aligned link). Links to `/auth/reset`.
 
 **Validation:**
 - `email`: `z.string().email("Enter a valid email address")`
@@ -646,9 +651,13 @@ No third-party registries declared for Phase 1.
 | Password reset: 15-min expiry, single-use | CONTEXT.md D-17 |
 | Logout uses outline variant (not destructive) | Researcher discretion — logout is benign navigation |
 | max-w-sm card (384px) for all auth forms | Researcher discretion — compact focus, appropriate for credential collection |
+| Typography: 2 weights only (400 regular, 600 semibold) | Checker revision 2026-04-17 — removed weight 500 |
+| Caption size: 12px (collapsed from 13px) | Checker revision 2026-04-17 — cleaner 4-step scale (24/16/14/12) |
+| Focal point declaration added to Layout | Checker revision 2026-04-17 — CardTitle h1 is primary focal point on all auth surfaces |
 
 ---
 
 *Phase: 01-foundations-auth*
 *UI-SPEC created: 2026-04-17*
+*UI-SPEC revised: 2026-04-17 (checker pass 1 — typography weights, caption size, focal point)*
 *Researcher: gsd-ui-researcher (claude-sonnet-4-6)*
