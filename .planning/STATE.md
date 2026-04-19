@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 2 UI-SPEC approved
-last_updated: "2026-04-19T09:05:26.780Z"
-last_activity: 2026-04-19 -- Phase 02 planning complete
+stopped_at: Completed Phase 02-01 Wave 0 Foundation
+last_updated: "2026-04-19T19:00:49.032Z"
+last_activity: 2026-04-19
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 11
-  completed_plans: 5
-  percent: 45
+  completed_plans: 6
+  percent: 55
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** The visual feedback has to feel good enough that users *want* to open the dashboard — progress bars moving is the draw, everything else supports that.
-**Current focus:** Phase 01 — foundations-auth
+**Current focus:** Phase 02 — goals-dashboard-three-types
 
 ## Current Position
 
-Phase: 2
-Plan: Not started
+Phase: 02 (goals-dashboard-three-types) — EXECUTING
+Plan: 2 of 6
 Status: Ready to execute
-Last activity: 2026-04-19 -- Phase 02 planning complete
+Last activity: 2026-04-19
 
 Progress: [██░░░░░░░░] 20%
 
@@ -61,6 +61,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase 01-foundations-auth P03 | 3min | 4 tasks | 9 files |
 | Phase 01-foundations-auth P04 | ~4.5min | 2 tasks | 8 files |
 | Phase 01-foundations-auth P05 | ~26min | 3 tasks | 16 files |
+| Phase 02 P01 | 30 | 5 tasks | 19 files |
 
 ## Accumulated Context
 
@@ -88,6 +89,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundations-auth]: Plan 01-05: Zod 4 + RHF typing handled via z.input<typeof schema> (not z.infer) for SignUpForm — schemas with .default() produce divergent input/output shapes; RHF holds input, server actions consume output.
 - [Phase 01-foundations-auth]: Plan 01-05: Tailwind v4 @theme token hygiene — never override --spacing-xs/sm/md/lg/xl/2xl named tokens; they power max-w-*, w-*, p-*, gap-*, space-*. Fixed globals.css AND 01-UI-SPEC.md so downstream phases don't re-introduce the collision.
 - [Phase 01-foundations-auth]: Plan 01-05: Auth routes nested under src/app/(auth)/auth/ (not (auth) root) so URLs match Plan 04 middleware AUTH_ROUTES + server action redirectTo hardcoded /auth/* paths; route-group parens still apply shared card layout.
+- [Phase 02]: D-01..D-08: Polymorphic parent (goals) + typed child tables with JOIN-via-goal_id RLS; no user_id on children
+- [Phase 02]: D-10..D-14: computeProgress warming-up guard daysElapsed<5; checklist always on-pace (no time axis D-12); paceFromDelta threshold ±2
+- [Phase 02]: Zod 4 UUID: uuid() enforces RFC 4122 version+variant nibbles strictly; test UUIDs must be valid v4 or nil (not all-same-digit)
 
 ### Pending Todos
 
@@ -108,6 +112,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-04-19T06:46:45.018Z
-Stopped at: Phase 2 UI-SPEC approved
-Resume file: .planning/phases/02-goals-dashboard-three-types/02-UI-SPEC.md
+Last session: 2026-04-19T19:00:49.028Z
+Stopped at: Completed Phase 02-01 Wave 0 Foundation
+Resume file: None

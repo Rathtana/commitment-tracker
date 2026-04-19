@@ -17,24 +17,24 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Goals
 
-- [ ] **GOAL-01**: User can create a goal with a name, type (count / checklist / habit), target, optional notes, and an associated month
-- [ ] **GOAL-02**: User can edit a goal that belongs to the current or a future month
-- [ ] **GOAL-03**: User can delete a goal with a confirmation step
+- [x] **GOAL-01**: User can create a goal with a name, type (count / checklist / habit), target, optional notes, and an associated month
+- [x] **GOAL-02**: User can edit a goal that belongs to the current or a future month
+- [x] **GOAL-03**: User can delete a goal with a confirmation step
 - [x] **GOAL-04**: Every goal is scoped to a specific month (stored as a DATE pinned to the first of that month)
 - [ ] **GOAL-05**: User can pre-set goals for future months by navigating forward before the month begins
 
 ### Progress Logging
 
-- [ ] **PROG-01**: User can increment a count-based goal in one click directly from the dashboard
-- [ ] **PROG-02**: User can toggle a sub-task done/not-done on a checklist goal from the dashboard
-- [ ] **PROG-03**: User can mark today done for a habit goal in one tap from the dashboard
-- [ ] **PROG-04**: User can log a missed-day check-in for any prior day within the current month (past months stay frozen)
-- [ ] **PROG-05**: User can undo the last progress action via a short-lived toast
+- [x] **PROG-01**: User can increment a count-based goal in one click directly from the dashboard
+- [x] **PROG-02**: User can toggle a sub-task done/not-done on a checklist goal from the dashboard
+- [x] **PROG-03**: User can mark today done for a habit goal in one tap from the dashboard
+- [x] **PROG-04**: User can log a missed-day check-in for any prior day within the current month (past months stay frozen)
+- [x] **PROG-05**: User can undo the last progress action via a short-lived toast
 
 ### Dashboard
 
 - [ ] **DASH-01**: Dashboard shows all current-month goals in a single scrollable list (no tabs, no drill-down required to log progress)
-- [ ] **DASH-02**: Every goal on the dashboard renders a visual progress bar reflecting its completion percentage
+- [x] **DASH-02**: Every goal on the dashboard renders a visual progress bar reflecting its completion percentage
 
 ### Month Navigation & History
 
@@ -47,7 +47,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **POLSH-01**: Dashboard and all core flows are mobile-responsive with touch targets ≥ 44px
 - [ ] **POLSH-02**: Failed saves surface through error toasts or inline errors — user input is never silently dropped
-- [ ] **POLSH-03**: Habit goals render a month-grid showing which specific days were hit/missed, alongside the progress bar
+- [x] **POLSH-03**: Habit goals render a month-grid showing which specific days were hit/missed, alongside the progress bar
 - [ ] **POLSH-04**: Past-month and end-of-month views include an optional two-line reflection field ("what worked / what didn't")
 
 ## v2 Requirements
@@ -102,25 +102,25 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-03 | Phase 1 | Complete |
 | AUTH-04 | Phase 1 | Complete |
 | AUTH-05 | Phase 1 | Complete |
-| GOAL-01 | Phase 2 | Pending |
-| GOAL-02 | Phase 2 | Pending |
-| GOAL-03 | Phase 2 | Pending |
+| GOAL-01 | Phase 2 | Complete |
+| GOAL-02 | Phase 2 | Complete |
+| GOAL-03 | Phase 2 | Complete |
 | GOAL-04 | Phase 1 | Complete |
 | GOAL-05 | Phase 3 | Pending |
-| PROG-01 | Phase 2 | Pending |
-| PROG-02 | Phase 2 | Pending |
-| PROG-03 | Phase 2 | Pending |
-| PROG-04 | Phase 2 | Pending |
-| PROG-05 | Phase 2 | Pending |
+| PROG-01 | Phase 2 | Complete |
+| PROG-02 | Phase 2 | Complete |
+| PROG-03 | Phase 2 | Complete |
+| PROG-04 | Phase 2 | Complete |
+| PROG-05 | Phase 2 | Complete |
 | DASH-01 | Phase 2 | Pending |
-| DASH-02 | Phase 2 | Pending |
+| DASH-02 | Phase 2 | Complete |
 | MNAV-01 | Phase 3 | Pending |
 | MNAV-02 | Phase 3 | Pending |
 | MNAV-03 | Phase 3 | Pending |
 | MNAV-04 | Phase 3 | Pending |
 | POLSH-01 | Phase 4 | Pending |
 | POLSH-02 | Phase 4 | Pending |
-| POLSH-03 | Phase 2 | Pending |
+| POLSH-03 | Phase 2 | Complete |
 | POLSH-04 | Phase 3 | Pending |
 
 **Coverage:**

@@ -48,7 +48,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. User can log a missed check-in for any prior day within the current month, and undo the last progress action via a short-lived toast
   5. Habit goal cards show a month-grid alongside the bar revealing which specific days were hit and which were missed (no punishing streak counter)
 **Plans**: 6 plans
-- [ ] 02-01-PLAN.md — Wave 0 foundation: schema (3 child tables + polymorphic CHECK) + `src/lib/progress.ts` + Zod discriminated union + shadcn installs + Sonner mount
+- [x] 02-01-PLAN.md — Wave 0 foundation: schema (3 child tables + polymorphic CHECK) + `src/lib/progress.ts` + Zod discriminated union + shadcn installs + Sonner mount
 - [ ] 02-02-PLAN.md — Wave 1 dashboard surface: motion `ProgressBar` primitive + `PaceChip` + `getMonthDashboard` query + `/dashboard` route + `DashboardShell` + empty state
 - [ ] 02-03-PLAN.md — Wave 2 goal CRUD: create/update/delete server actions + 2-step CreateGoalDialog + DeleteGoalDialog AlertDialog
 - [ ] 02-04-PLAN.md — Wave 3 count card: `incrementCountAction` + `backfillCountAction` + `undoLastMutationAction` + CountCard + EarlierDayPopover + Sonner undo contract
@@ -88,7 +88,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundations & Auth | 1/5 | In progress | - |
-| 2. Goals & Dashboard (Three Types) | 0/TBD | Not started | - |
+| 2. Goals & Dashboard (Three Types) | 1/6 | In Progress|  |
 | 3. Month Navigation, History & Reflection | 0/TBD | Not started | - |
 | 4. Launch Polish | 0/TBD | Not started | - |
 
