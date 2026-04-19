@@ -9,11 +9,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Authentication
 
-- [ ] **AUTH-01**: User can sign up with email and password
-- [ ] **AUTH-02**: User receives an email verification link after signup
-- [ ] **AUTH-03**: User can log in and stay logged in across browser sessions
-- [ ] **AUTH-04**: User can log out from any page
-- [ ] **AUTH-05**: User can reset a forgotten password via an emailed link
+- [x] **AUTH-01**: User can sign up with email and password
+- [x] **AUTH-02**: User receives an email verification link after signup
+- [x] **AUTH-03**: User can log in and stay logged in across browser sessions
+- [x] **AUTH-04**: User can log out from any page
+- [x] **AUTH-05**: User can reset a forgotten password via an emailed link
 
 ### Goals
 
@@ -97,11 +97,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
-| AUTH-03 | Phase 1 | Pending |
-| AUTH-04 | Phase 1 | Pending |
-| AUTH-05 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Complete |
+| AUTH-02 | Phase 1 | Complete |
+| AUTH-03 | Phase 1 | Complete |
+| AUTH-04 | Phase 1 | Complete |
+| AUTH-05 | Phase 1 | Complete |
 | GOAL-01 | Phase 2 | Pending |
 | GOAL-02 | Phase 2 | Pending |
 | GOAL-03 | Phase 2 | Pending |

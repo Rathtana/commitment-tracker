@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-03 (schema + RLS migration). Ready for Plan 01-04 (auth server actions + middleware).
-last_updated: "2026-04-19T02:50:31.790Z"
+stopped_at: "Completed 01-04 (auth backbone: middleware, callback, 5 server actions, Zod schemas). Ready for Plan 01-05 (auth UI)."
+last_updated: "2026-04-19T02:59:08.530Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 5
-  completed_plans: 3
-  percent: 60
+  completed_plans: 4
+  percent: 80
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-17)
 ## Current Position
 
 Phase: 01 (foundations-auth) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-04-19
 
@@ -58,6 +58,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase 01-foundations-auth P01 | 2min (after resume) | 3 tasks | 22 files |
 | Phase 01-foundations-auth P02 | 3min | 2 tasks | 2 files |
 | Phase 01-foundations-auth P03 | 3min | 4 tasks | 9 files |
+| Phase 01-foundations-auth P04 | ~4.5min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundations-auth]: Plan 01-03: public.users + public.goals tables live in Supabase dev project; 6 RLS policies + month_is_first_of_month CHECK + on_auth_user_created trigger all applied and verified
 - [Phase 01-foundations-auth]: Plan 01-03: RLS test uses SET LOCAL role=authenticated + forged request.jwt.claims (no Supabase admin SDK needed); seeds via auth.users INSERT to exercise on_auth_user_created trigger alongside D-21/D-22
 - [Phase 01-foundations-auth]: Plan 01-03: psql not available locally; post-push verification uses inline node -e + postgres.js (same driver in node_modules). Shell env loading standardised to set -a; source .env.local; set +a with quoted DATABASE_URL
+- [Phase 01-foundations-auth]: Plan 01-04: Supabase env key fallback chain in server factory + middleware (read NEXT_PUBLIC_SUPABASE_ANON_KEY ?? NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) — keeps downstream code working if the alias is removed.
+- [Phase 01-foundations-auth]: Plan 01-04: signInAction explicitly calls supabase.auth.signOut() on unverified login attempt so no half-session cookie persists (belt-and-suspenders D-16 mitigation).
+- [Phase 01-foundations-auth]: Plan 01-04: Vitest @/ path alias added in this plan (Rule 3 — blocking fix). Prior plans' tests used relative imports; action tests forced the alias.
 
 ### Pending Todos
 
@@ -99,6 +103,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-04-19T02:50:31.786Z
-Stopped at: Completed 01-03 (schema + RLS migration). Ready for Plan 01-04 (auth server actions + middleware).
+Last session: 2026-04-19T02:59:08.527Z
+Stopped at: Completed 01-04 (auth backbone: middleware, callback, 5 server actions, Zod schemas). Ready for Plan 01-05 (auth UI).
 Resume file: None
