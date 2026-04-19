@@ -1,11 +1,12 @@
 import { and, eq, sql } from "drizzle-orm"
 import { db } from "@/server/db"
-import { goals, progressEntries } from "@/server/db/schema"
+import { goals, progressEntries, tasks } from "@/server/db/schema"
 import { today, monthBucket } from "@/lib/time"
 import type {
   IncrementCountInput,
   BackfillCountInput,
   UndoLastMutationInput,
+  ToggleTaskInput,
 } from "@/lib/schemas/goals"
 
 export class GoalNotFoundError extends Error {
@@ -29,6 +30,12 @@ export class WrongGoalTypeError extends Error {
 export class UndoNotFoundError extends Error {
   constructor() {
     super("Nothing to undo.")
+  }
+}
+
+export class TaskNotFoundError extends Error {
+  constructor() {
+    super("Task not found.")
   }
 }
 
@@ -88,6 +95,43 @@ export async function backfillCount(userId: string, userTz: string, input: Backf
   })
 }
 
+export async function toggleTask(userId: string, userTz: string, input: ToggleTaskInput) {
+  const now = new Date()
+  const currentMonth = isoDate(monthBucket(now, userTz))
+  return db.transaction(async (tx) => {
+    // Load task + parent goal, assert ownership
+    const [row] = await tx
+      .select({
+        taskId: tasks.id,
+        taskIsDone: tasks.isDone,
+        goalId: goals.id,
+        goalType: goals.type,
+        goalMonth: goals.month,
+        goalUserId: goals.userId,
+      })
+      .from(tasks)
+      .innerJoin(goals, eq(goals.id, tasks.goalId))
+      .where(and(eq(tasks.id, input.taskId), eq(tasks.goalId, input.goalId)))
+      .limit(1)
+
+    if (!row) throw new TaskNotFoundError()
+    if (row.goalUserId !== userId) throw new GoalNotFoundError()
+    if (row.goalType !== "checklist") throw new WrongGoalTypeError()
+    if (row.goalMonth !== currentMonth) throw new OutOfMonthError()
+
+    await tx
+      .update(tasks)
+      .set({
+        priorIsDone: row.taskIsDone,
+        isDone: input.isDone,
+        doneAt: input.isDone ? now : null,
+        lastUndoId: input.undoId,
+        updatedAt: now,
+      })
+      .where(eq(tasks.id, input.taskId))
+  })
+}
+
 export async function undoLastMutation(userId: string, input: UndoLastMutationInput) {
   return db.transaction(async (tx) => {
     // Try count branch (progress_entries)
@@ -111,7 +155,33 @@ export async function undoLastMutation(userId: string, input: UndoLastMutationIn
       return { reversed: "count" as const }
     }
 
-    // Plan 05: extend to search tasks by undoId metadata
+    // Try tasks branch (checklist toggles)
+    const [t] = await tx
+      .select({
+        taskId: tasks.id,
+        priorIsDone: tasks.priorIsDone,
+      })
+      .from(tasks)
+      .innerJoin(goals, eq(goals.id, tasks.goalId))
+      .where(and(eq(tasks.lastUndoId, input.undoId), eq(goals.userId, userId)))
+      .limit(1)
+
+    if (t) {
+      // priorIsDone should always be non-null when last_undo_id is set; default to false as safety
+      const restore = t.priorIsDone ?? false
+      await tx
+        .update(tasks)
+        .set({
+          isDone: restore,
+          doneAt: restore ? new Date() : null,
+          lastUndoId: null,
+          priorIsDone: null,
+          updatedAt: new Date(),
+        })
+        .where(eq(tasks.id, t.taskId))
+      return { reversed: "checklist" as const }
+    }
+
     // Plan 06: extend to search habit_check_ins by undoId
     throw new UndoNotFoundError()
   })
