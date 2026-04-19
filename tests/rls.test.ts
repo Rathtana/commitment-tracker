@@ -168,3 +168,161 @@ describe('RLS: cross-user isolation (D-21, D-22)', () => {
     expect(result.count).toBe(0)
   })
 })
+
+// ---------------------------------------------------------------------------
+// Phase 2 child-table RLS tests
+// Each suite seeds one goal for USER_A (and goal/task/check-in/entry as needed),
+// then verifies USER_B cannot read/mutate USER_A's child rows.
+// ---------------------------------------------------------------------------
+
+let sharedGoalA_id: string
+
+async function seedGoalA() {
+  sharedGoalA_id = randomUUID()
+  await asUser(USER_A, (tx) => tx`
+    INSERT INTO public.goals (id, user_id, month, type, title, target_count, current_count)
+    VALUES (${sharedGoalA_id}, ${USER_A}, '2026-04-01', 'count', 'A count goal', 10, 0)
+  `)
+}
+
+async function cleanChildRows() {
+  await sql`DELETE FROM public.goals WHERE user_id IN (${USER_A}, ${USER_B})`
+}
+
+describe('tasks RLS', () => {
+  let taskId: string
+
+  beforeEach(async () => {
+    await cleanChildRows()
+    await seedGoalA()
+    taskId = randomUUID()
+    // Seed one task for USER_A's goal (as postgres role bypassing RLS)
+    await sql`
+      INSERT INTO public.tasks (id, goal_id, label)
+      VALUES (${taskId}, ${sharedGoalA_id}, 'Buy groceries')
+    `
+  })
+
+  it("USER_B SELECT tasks → 0 rows (A's tasks are hidden)", async () => {
+    const rows = await asUser(USER_B, (tx) => tx`SELECT id FROM public.tasks WHERE id = ${taskId}`)
+    expect(rows).toHaveLength(0)
+  })
+
+  it('USER_B UPDATE A task → 0 rows affected', async () => {
+    const result = await asUser(USER_B, (tx) =>
+      tx`UPDATE public.tasks SET label = 'hacked' WHERE id = ${taskId}`,
+    )
+    expect(result.count).toBe(0)
+  })
+
+  it('USER_B DELETE A task → 0 rows affected', async () => {
+    const result = await asUser(USER_B, (tx) =>
+      tx`DELETE FROM public.tasks WHERE id = ${taskId}`,
+    )
+    expect(result.count).toBe(0)
+  })
+
+  it("USER_B INSERT task with A's goal_id → rejected by WITH CHECK", async () => {
+    await expect(
+      asUser(USER_B, (tx) => tx`
+        INSERT INTO public.tasks (id, goal_id, label)
+        VALUES (${randomUUID()}, ${sharedGoalA_id}, 'stolen task')
+      `),
+    ).rejects.toThrow(/row-level security/i)
+  })
+})
+
+describe('habit_check_ins RLS', () => {
+  beforeEach(async () => {
+    await cleanChildRows()
+    await seedGoalA()
+    // Change goal to habit type for this suite
+    await sql`
+      INSERT INTO public.goals (id, user_id, month, type, title, target_days)
+      VALUES (${randomUUID()}, ${USER_A}, '2026-04-01', 'habit', 'A habit goal', 20)
+    `
+    // Re-fetch to get the habit goal id
+    const rows = await sql`SELECT id FROM public.goals WHERE user_id = ${USER_A} AND type = 'habit' LIMIT 1`
+    if (rows.length > 0) {
+      await sql`
+        INSERT INTO public.habit_check_ins (goal_id, check_in_date)
+        VALUES (${rows[0].id}, '2026-04-01')
+        ON CONFLICT DO NOTHING
+      `
+    }
+  })
+
+  it("USER_B SELECT habit_check_ins → 0 rows (A's check-ins hidden)", async () => {
+    const rows = await asUser(USER_B, (tx) =>
+      tx`SELECT goal_id FROM public.habit_check_ins WHERE check_in_date = '2026-04-01'`,
+    )
+    // USER_B should see none of USER_A's check-ins
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const goalIds = rows.map((r: any) => r.goal_id as string)
+    const ownedByA = await sql`SELECT id FROM public.goals WHERE user_id = ${USER_A}`
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const aGoalIds = new Set(ownedByA.map((g: any) => g.id as string))
+    const leaked = goalIds.filter((id: string) => aGoalIds.has(id))
+    expect(leaked).toHaveLength(0)
+  })
+
+  it("USER_B INSERT habit_check_in with A's goal_id → rejected", async () => {
+    const aGoals = await sql`SELECT id FROM public.goals WHERE user_id = ${USER_A} AND type = 'habit' LIMIT 1`
+    if (aGoals.length === 0) return
+    const aHabitGoalId = aGoals[0].id
+    await expect(
+      asUser(USER_B, (tx) => tx`
+        INSERT INTO public.habit_check_ins (goal_id, check_in_date)
+        VALUES (${aHabitGoalId}, '2026-04-05')
+      `),
+    ).rejects.toThrow(/row-level security/i)
+  })
+})
+
+describe('progress_entries RLS', () => {
+  let entryId: string
+
+  beforeEach(async () => {
+    await cleanChildRows()
+    await seedGoalA()
+    entryId = randomUUID()
+    await sql`
+      INSERT INTO public.progress_entries (id, goal_id, delta, logged_local_date)
+      VALUES (${entryId}, ${sharedGoalA_id}, 1, '2026-04-01')
+    `
+  })
+
+  it("USER_B SELECT progress_entries → 0 rows (A's entries hidden)", async () => {
+    const rows = await asUser(USER_B, (tx) =>
+      tx`SELECT id FROM public.progress_entries WHERE id = ${entryId}`,
+    )
+    expect(rows).toHaveLength(0)
+  })
+
+  it('USER_B UPDATE A progress_entry → 0 rows affected', async () => {
+    const result = await asUser(USER_B, (tx) =>
+      tx`UPDATE public.progress_entries SET delta = 99 WHERE id = ${entryId}`,
+    )
+    expect(result.count).toBe(0)
+  })
+
+  it('USER_B DELETE A progress_entry → 0 rows affected', async () => {
+    const result = await asUser(USER_B, (tx) =>
+      tx`DELETE FROM public.progress_entries WHERE id = ${entryId}`,
+    )
+    expect(result.count).toBe(0)
+  })
+
+  it("USER_B INSERT progress_entry with A's goal_id → rejected", async () => {
+    await expect(
+      asUser(USER_B, (tx) => tx`
+        INSERT INTO public.progress_entries (id, goal_id, delta, logged_local_date)
+        VALUES (${randomUUID()}, ${sharedGoalA_id}, 1, '2026-04-02')
+      `),
+    ).rejects.toThrow(/row-level security/i)
+  })
+})
+
+describe('goals polymorphic CHECK', () => {
+  it.todo("CHECK rejects (type=count, target_count=NULL)")
+})
