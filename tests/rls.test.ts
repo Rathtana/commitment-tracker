@@ -100,16 +100,17 @@ describe('RLS: cross-user isolation (D-21, D-22)', () => {
     goalB_id = randomUUID()
 
     // Insert one goal per user AS that user (so WITH CHECK fires correctly).
+    // type='count' requires target_count + current_count (goals_polymorphic_validity CHECK)
     await asUser(USER_A, async (tx) => {
       await tx`
-        INSERT INTO public.goals (id, user_id, month, type, title)
-        VALUES (${goalA_id}, ${USER_A}, '2026-04-01', 'count', 'A goal')
+        INSERT INTO public.goals (id, user_id, month, type, title, target_count, current_count)
+        VALUES (${goalA_id}, ${USER_A}, '2026-04-01', 'count', 'A goal', 10, 0)
       `
     })
     await asUser(USER_B, async (tx) => {
       await tx`
-        INSERT INTO public.goals (id, user_id, month, type, title)
-        VALUES (${goalB_id}, ${USER_B}, '2026-04-01', 'count', 'B goal')
+        INSERT INTO public.goals (id, user_id, month, type, title, target_count, current_count)
+        VALUES (${goalB_id}, ${USER_B}, '2026-04-01', 'count', 'B goal', 10, 0)
       `
     })
   })
@@ -324,5 +325,30 @@ describe('progress_entries RLS', () => {
 })
 
 describe('goals polymorphic CHECK', () => {
-  it.todo("CHECK rejects (type=count, target_count=NULL)")
+  it('rejects (type=count, target_count=NULL)', async () => {
+    await expect(
+      asUser(USER_A, (tx) => tx`
+        INSERT INTO public.goals (user_id, month, type, title, target_count, current_count)
+        VALUES (${USER_A}, '2026-04-01', 'count', 'bad count', NULL, 0)
+      `),
+    ).rejects.toThrow(/check/i)
+  })
+
+  it('rejects (type=habit, target_days=NULL)', async () => {
+    await expect(
+      asUser(USER_A, (tx) => tx`
+        INSERT INTO public.goals (user_id, month, type, title, target_days)
+        VALUES (${USER_A}, '2026-04-01', 'habit', 'bad habit', NULL)
+      `),
+    ).rejects.toThrow(/check/i)
+  })
+
+  it('rejects (type=checklist, target_count=5)', async () => {
+    await expect(
+      asUser(USER_A, (tx) => tx`
+        INSERT INTO public.goals (user_id, month, type, title, target_count, current_count)
+        VALUES (${USER_A}, '2026-04-01', 'checklist', 'bad checklist', 5, 0)
+      `),
+    ).rejects.toThrow(/check/i)
+  })
 })
