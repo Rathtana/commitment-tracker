@@ -111,6 +111,8 @@ export const tasks = pgTable(
     isDone: boolean("is_done").notNull().default(false),
     position: integer("position").notNull().default(0),
     doneAt: timestamp("done_at", { withTimezone: true }),
+    lastUndoId: uuid("last_undo_id"),         // set at toggle time; undoLastMutation matches by this (D-07, D-33)
+    priorIsDone: boolean("prior_is_done"),    // stores is_done value BEFORE the toggle, so undo can restore it
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },

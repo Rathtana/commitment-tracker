@@ -231,6 +231,34 @@ describe('tasks RLS', () => {
       `),
     ).rejects.toThrow(/row-level security/i)
   })
+
+  // Migration 0004: last_undo_id + prior_is_done columns
+  it('USER_A can SELECT task including last_undo_id + prior_is_done columns (migration 0004)', async () => {
+    const rows = await asUser(USER_A, (tx) =>
+      tx`SELECT id, last_undo_id, prior_is_done FROM public.tasks WHERE id = ${taskId}`,
+    )
+    expect(rows).toHaveLength(1)
+    expect(rows[0].id).toBe(taskId)
+    // Both columns are nullable; newly inserted task has nulls
+    expect(rows[0].last_undo_id).toBeNull()
+    expect(rows[0].prior_is_done).toBeNull()
+  })
+
+  it("USER_A UPDATE own task to set last_undo_id → 1 row affected (undo metadata write)", async () => {
+    const undoId = randomUUID()
+    const result = await asUser(USER_A, (tx) =>
+      tx`UPDATE public.tasks SET last_undo_id = ${undoId}, prior_is_done = false WHERE id = ${taskId}`,
+    )
+    expect(result.count).toBe(1)
+  })
+
+  it("USER_B UPDATE A task last_undo_id → 0 rows affected (RLS blocks cross-user undo metadata write)", async () => {
+    const undoId = randomUUID()
+    const result = await asUser(USER_B, (tx) =>
+      tx`UPDATE public.tasks SET last_undo_id = ${undoId}, prior_is_done = false WHERE id = ${taskId}`,
+    )
+    expect(result.count).toBe(0)
+  })
 })
 
 describe('habit_check_ins RLS', () => {
