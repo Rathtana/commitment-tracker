@@ -14,13 +14,12 @@ The visual feedback has to feel good enough that users *want* to open the dashbo
 
 <!-- Shipped and confirmed valuable. -->
 
-(None yet — ship to validate)
+- [x] User can sign up and log in (public product) — *Validated in Phase 1: Foundations & Auth*
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
 
-- [ ] User can sign up and log in (public product)
 - [ ] User can create goals for a specific month
 - [ ] User supports three goal types: count-based, task checklist, habit/streak
 - [ ] User can log progress against each goal (increment count, check task, mark habit done)
@@ -83,4 +82,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-17 after initialization*
+*Last updated: 2026-04-19 after Phase 1: Foundations & Auth complete*
