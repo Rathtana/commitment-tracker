@@ -1,21 +1,14 @@
 'use client'
 
-import { useOptimistic, useCallback, useState } from 'react'
-import { Plus, MoreHorizontal } from 'lucide-react'
+import { useOptimistic, useCallback, useState, useTransition } from 'react'
+import { Plus } from 'lucide-react'
+import { toast } from 'sonner'
 import type { Goal } from '@/lib/progress'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { ProgressBar } from '@/components/progress-bar'
-import { PaceChip } from '@/components/pace-chip'
-import { computeProgress } from '@/lib/progress'
 import { CreateGoalDialog } from '@/components/create-goal-dialog'
 import { DeleteGoalDialog } from '@/components/delete-goal-dialog'
+import { GoalCard } from '@/components/goal-card'
+import { incrementCountAction, backfillCountAction, undoLastMutationAction } from '@/server/actions/progress'
 
 // Discriminated action union — Waves 3/4/5 use dispatch from matching card components.
 export type DashboardAction =
@@ -61,20 +54,23 @@ export function dashboardReducer(current: Goal[], action: DashboardAction): Goal
 interface NewGoalButtonProps {
   daysInMonthDefault: number
   className?: string
+  size?: 'default' | 'lg'
+  label?: string
 }
 
-export function NewGoalButton({ daysInMonthDefault, className }: NewGoalButtonProps) {
+export function NewGoalButton({
+  daysInMonthDefault,
+  className,
+  size = 'default',
+  label = 'New goal',
+}: NewGoalButtonProps) {
   const [open, setOpen] = useState(false)
   return (
     <>
-      <Button onClick={() => setOpen(true)} className={className}>
-        <Plus className="mr-2 h-4 w-4" /> New goal
+      <Button size={size} onClick={() => setOpen(true)} className={className}>
+        <Plus className="mr-2 h-4 w-4" /> {label}
       </Button>
-      <CreateGoalDialog
-        open={open}
-        onOpenChange={setOpen}
-        daysInMonthDefault={daysInMonthDefault}
-      />
+      <CreateGoalDialog open={open} onOpenChange={setOpen} daysInMonthDefault={daysInMonthDefault} />
     </>
   )
 }
@@ -89,6 +85,7 @@ interface DashboardShellProps {
 
 export function DashboardShell({ initialGoals, userTz, nowIso, daysInMonthDefault }: DashboardShellProps) {
   const [goals, dispatch] = useOptimistic(initialGoals, dashboardReducer)
+  const [isPending, startTransition] = useTransition()
   const now = new Date(nowIso)
 
   // Dialog state for create/edit/delete
@@ -96,15 +93,68 @@ export function DashboardShell({ initialGoals, userTz, nowIso, daysInMonthDefaul
   const [editingGoal, setEditingGoal] = useState<Parameters<typeof CreateGoalDialog>[0]['editing']>(null)
   const [deletingGoal, setDeletingGoal] = useState<{ id: string; title: string } | null>(null)
 
-  // Handlers wired in Waves 3-5. Exposed via context or prop-drilling; for Wave 1 a no-op placeholder.
+  void isPending // suppress unused-var lint warning
+
+  function showUndoToast(label: string, undoId: string, optimisticRollback: () => void) {
+    toast(label, {
+      id: 'progress-undo',      // D-34: single id — most-recent-only (replaces, not stacks)
+      duration: 6000,           // D-32: 6-second undo window
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          startTransition(async () => {
+            optimisticRollback()
+            await undoLastMutationAction({ undoId })
+          })
+        },
+      },
+    })
+  }
+
   const handleCountIncrement = useCallback(
-    (_goalId: string, _delta: number) => {
-      // Plan 02-04 wires incrementCountAction + startTransition + Sonner toast.
+    (goalId: string, delta: number) => {
+      const undoId = crypto.randomUUID()
+      const goal = goals.find((g) => g.id === goalId) as Extract<Goal, { type: 'count' }> | undefined
+      startTransition(async () => {
+        dispatch({ type: 'count:increment', goalId, delta })
+        const result = await incrementCountAction({ goalId, delta, undoId })
+        if (!result.ok) {
+          toast.error(result.error ?? "Couldn't save that change. Try again.")
+          return
+        }
+        const sign = delta > 0 ? '+' : '\u2212'
+        showUndoToast(
+          `Logged ${sign}${Math.abs(delta)} on ${(goal as { title?: string } | undefined)?.title ?? 'goal'}`,
+          undoId,
+          () => dispatch({ type: 'count:increment', goalId, delta: -delta }),
+        )
+      })
     },
-    [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [goals],
   )
 
-  void handleCountIncrement // referenced to suppress unused-var lint warning
+  const handleCountBackfill = useCallback(
+    (goalId: string, loggedLocalDate: string, delta: number) => {
+      const undoId = crypto.randomUUID()
+      const goal = goals.find((g) => g.id === goalId) as Extract<Goal, { type: 'count' }> | undefined
+      startTransition(async () => {
+        dispatch({ type: 'count:increment', goalId, delta })
+        const result = await backfillCountAction({ goalId, loggedLocalDate, delta, undoId })
+        if (!result.ok) {
+          toast.error(result.error ?? "Couldn't save that change. Try again.")
+          return
+        }
+        showUndoToast(
+          `Logged +${delta} on ${(goal as { title?: string } | undefined)?.title ?? 'goal'} \u00b7 ${loggedLocalDate}`,
+          undoId,
+          () => dispatch({ type: 'count:increment', goalId, delta: -delta }),
+        )
+      })
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [goals],
+  )
 
   function buildEditingGoal(goal: Goal): Parameters<typeof CreateGoalDialog>[0]['editing'] {
     const base = {
@@ -129,63 +179,24 @@ export function DashboardShell({ initialGoals, userTz, nowIso, daysInMonthDefaul
     }
   }
 
+  const handlers = {
+    onCountIncrement: handleCountIncrement,
+    onCountBackfill: handleCountBackfill,
+    onEdit: (goal: Goal) => {
+      setEditingGoal(buildEditingGoal(goal))
+      setCreateOpen(true)
+    },
+    onDelete: (goal: Goal) => {
+      setDeletingGoal({ id: goal.id, title: (goal as { title?: string }).title ?? 'goal' })
+    },
+  }
+
   return (
     <>
       <section className="flex flex-col gap-4" aria-label="Your goals">
-        {goals.map((goal) => {
-          const snap = computeProgress(goal, now, userTz)
-          const title = (goal as { title?: string }).title ?? 'Goal'
-          return (
-            <Card key={goal.id}>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-semibold">{title}</CardTitle>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" aria-label={`Options for ${title}`}>
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setEditingGoal(buildEditingGoal(goal))
-                        setCreateOpen(true)
-                      }}
-                    >
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="text-destructive focus:text-destructive"
-                      onClick={() => setDeletingGoal({ id: goal.id, title })}
-                    >
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-4">
-                <div className="flex items-center gap-2">
-                  <ProgressBar
-                    percent={snap.percent}
-                    expected={snap.pace === 'warming-up' ? undefined : snap.expected}
-                    ariaLabel={`${title}: ${snap.raw.done} of ${snap.raw.total} (${Math.round(snap.percent * 100)}%)`}
-                    className="flex-1"
-                  />
-                  <PaceChip
-                    pace={snap.pace}
-                    paceDelta={snap.paceDelta}
-                    suppressForChecklist={goal.type === 'checklist'}
-                  />
-                </div>
-                <p className="text-right text-xs tabular-nums text-muted-foreground">
-                  {snap.raw.done} of {snap.raw.total}
-                </p>
-                {/* Type-specific surface placeholder — Waves 3/4/5 replace with <CountCard>/<ChecklistCard>/<HabitCard> */}
-              </CardContent>
-            </Card>
-          )
-        })}
-        {/* Wave 3-5 will import GoalCard/index.tsx and render per-type surfaces here instead */}
+        {goals.map((goal) => (
+          <GoalCard key={goal.id} goal={goal} now={now} userTz={userTz} handlers={handlers} />
+        ))}
       </section>
 
       {/* Create / Edit dialog */}
@@ -203,7 +214,9 @@ export function DashboardShell({ initialGoals, userTz, nowIso, daysInMonthDefaul
       {deletingGoal && (
         <DeleteGoalDialog
           open={Boolean(deletingGoal)}
-          onOpenChange={(o) => { if (!o) setDeletingGoal(null) }}
+          onOpenChange={(o) => {
+            if (!o) setDeletingGoal(null)
+          }}
           goalId={deletingGoal.id}
           goalTitle={deletingGoal.title}
           onDeleted={() => setDeletingGoal(null)}
