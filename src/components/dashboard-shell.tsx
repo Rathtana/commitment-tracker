@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button'
 import { CreateGoalDialog } from '@/components/create-goal-dialog'
 import { DeleteGoalDialog } from '@/components/delete-goal-dialog'
 import { GoalCard } from '@/components/goal-card'
-import { incrementCountAction, backfillCountAction, undoLastMutationAction, toggleTaskAction } from '@/server/actions/progress'
+import { incrementCountAction, backfillCountAction, undoLastMutationAction, toggleTaskAction, upsertHabitCheckInAction } from '@/server/actions/progress'
+import { format } from 'date-fns'
 
 // Discriminated action union — Waves 3/4/5 use dispatch from matching card components.
 export type DashboardAction =
@@ -176,6 +177,35 @@ export function DashboardShell({ initialGoals, userTz, nowIso, daysInMonthDefaul
     [goals],
   )
 
+  const handleHabitToggle = useCallback(
+    (goalId: string, localDate: string, isChecked: boolean) => {
+      const undoId = crypto.randomUUID()
+      const goal = goals.find((g) => g.id === goalId) as (Extract<Goal, { type: 'habit' }> & { title?: string }) | undefined
+      const todayStrLocal = format(new Date(nowIso), 'yyyy-MM-dd')
+      startTransition(async () => {
+        dispatch({ type: 'habit:toggle', goalId, localDate, isChecked })
+        const result = await upsertHabitCheckInAction({ goalId, checkInDate: localDate, isChecked, undoId })
+        if (!result.ok) {
+          toast.error(result.error ?? "Couldn't save that change. Try again.")
+          return
+        }
+
+        const isBackfill = localDate !== todayStrLocal
+        let copy: string
+        if (isBackfill && isChecked) copy = `Marked ${localDate} on ${goal?.title ?? 'goal'}`
+        else if (isBackfill && !isChecked) copy = `Unmarked ${localDate} on ${goal?.title ?? 'goal'}`
+        else if (!isBackfill && isChecked) copy = `Marked today on ${goal?.title ?? 'goal'}`
+        else copy = `Unmarked today on ${goal?.title ?? 'goal'}`
+
+        showUndoToast(copy, undoId, () => {
+          dispatch({ type: 'habit:toggle', goalId, localDate, isChecked: !isChecked })
+        })
+      })
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [goals, nowIso],
+  )
+
   function buildEditingGoal(goal: Goal): Parameters<typeof CreateGoalDialog>[0]['editing'] {
     const base = {
       goalId: goal.id,
@@ -203,6 +233,7 @@ export function DashboardShell({ initialGoals, userTz, nowIso, daysInMonthDefaul
     onCountIncrement: handleCountIncrement,
     onCountBackfill: handleCountBackfill,
     onChecklistToggle: handleChecklistToggle,
+    onHabitToggle: handleHabitToggle,
     onEdit: (goal: Goal) => {
       setEditingGoal(buildEditingGoal(goal))
       setCreateOpen(true)
