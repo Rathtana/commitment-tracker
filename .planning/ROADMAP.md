@@ -47,7 +47,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can increment a count goal in one click, toggle a checklist sub-task in one click, and mark today done on a habit goal in one tap — all directly from the dashboard with optimistic UI
   4. User can log a missed check-in for any prior day within the current month, and undo the last progress action via a short-lived toast
   5. Habit goal cards show a month-grid alongside the bar revealing which specific days were hit and which were missed (no punishing streak counter)
-**Plans**: TBD
+**Plans**: 6 plans
+- [ ] 02-01-PLAN.md — Wave 0 foundation: schema (3 child tables + polymorphic CHECK) + `src/lib/progress.ts` + Zod discriminated union + shadcn installs + Sonner mount
+- [ ] 02-02-PLAN.md — Wave 1 dashboard surface: motion `ProgressBar` primitive + `PaceChip` + `getMonthDashboard` query + `/dashboard` route + `DashboardShell` + empty state
+- [ ] 02-03-PLAN.md — Wave 2 goal CRUD: create/update/delete server actions + 2-step CreateGoalDialog + DeleteGoalDialog AlertDialog
+- [ ] 02-04-PLAN.md — Wave 3 count card: `incrementCountAction` + `backfillCountAction` + `undoLastMutationAction` + CountCard + EarlierDayPopover + Sonner undo contract
+- [ ] 02-05-PLAN.md — Wave 4 checklist card: `toggleTaskAction` + tasks undo columns + ChecklistCard + undo extension
+- [ ] 02-06-PLAN.md — Wave 5 habit card: `upsertHabitCheckInAction` + `habit_check_in_undos` table + HabitGrid + HabitCard + full-phase UAT
 **UI hint**: yes
 
 ### Phase 3: Month Navigation, History & Reflection
