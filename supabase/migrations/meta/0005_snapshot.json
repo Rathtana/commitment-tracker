@@ -1,0 +1,661 @@
+{
+  "id": "905ed57c-246e-47c0-9cc3-e51db77ec6c8",
+  "prevId": "2cce8d04-cfc6-4233-9605-215b45005fc4",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.goals": {
+      "name": "goals",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "month": {
+          "name": "month",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "goal_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
+        "target_count": {
+          "name": "target_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "current_count": {
+          "name": "current_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "target_days": {
+          "name": "target_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "goals_user_id_fk": {
+          "name": "goals_user_id_fk",
+          "tableFrom": "goals",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "goals-select-own": {
+          "name": "goals-select-own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "user_id = auth.uid()"
+        },
+        "goals-insert-own": {
+          "name": "goals-insert-own",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "user_id = auth.uid()"
+        },
+        "goals-update-own": {
+          "name": "goals-update-own",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "user_id = auth.uid()",
+          "withCheck": "user_id = auth.uid()"
+        },
+        "goals-delete-own": {
+          "name": "goals-delete-own",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "user_id = auth.uid()"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.habit_check_in_undos": {
+      "name": "habit_check_in_undos",
+      "schema": "",
+      "columns": {
+        "undo_id": {
+          "name": "undo_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "goal_id": {
+          "name": "goal_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "check_in_date": {
+          "name": "check_in_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "was_checked": {
+          "name": "was_checked",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "habit_check_in_undos_goal_id_fk": {
+          "name": "habit_check_in_undos_goal_id_fk",
+          "tableFrom": "habit_check_in_undos",
+          "tableTo": "goals",
+          "columnsFrom": [
+            "goal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "habit-check-in-undos-select-own": {
+          "name": "habit-check-in-undos-select-own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())"
+        },
+        "habit-check-in-undos-insert-own": {
+          "name": "habit-check-in-undos-insert-own",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())"
+        },
+        "habit-check-in-undos-update-own": {
+          "name": "habit-check-in-undos-update-own",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())",
+          "withCheck": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())"
+        },
+        "habit-check-in-undos-delete-own": {
+          "name": "habit-check-in-undos-delete-own",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.habit_check_ins": {
+      "name": "habit_check_ins",
+      "schema": "",
+      "columns": {
+        "goal_id": {
+          "name": "goal_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "check_in_date": {
+          "name": "check_in_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "habit_check_ins_goal_id_fk": {
+          "name": "habit_check_ins_goal_id_fk",
+          "tableFrom": "habit_check_ins",
+          "tableTo": "goals",
+          "columnsFrom": [
+            "goal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "habit_check_ins_pk": {
+          "name": "habit_check_ins_pk",
+          "columns": [
+            "goal_id",
+            "check_in_date"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {
+        "habit-check-ins-select-own": {
+          "name": "habit-check-ins-select-own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())"
+        },
+        "habit-check-ins-insert-own": {
+          "name": "habit-check-ins-insert-own",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())"
+        },
+        "habit-check-ins-update-own": {
+          "name": "habit-check-ins-update-own",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())",
+          "withCheck": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())"
+        },
+        "habit-check-ins-delete-own": {
+          "name": "habit-check-ins-delete-own",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.progress_entries": {
+      "name": "progress_entries",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "goal_id": {
+          "name": "goal_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "delta": {
+          "name": "delta",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "logged_at": {
+          "name": "logged_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "logged_local_date": {
+          "name": "logged_local_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "undo_id": {
+          "name": "undo_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "progress_entries_goal_id_fk": {
+          "name": "progress_entries_goal_id_fk",
+          "tableFrom": "progress_entries",
+          "tableTo": "goals",
+          "columnsFrom": [
+            "goal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "progress-entries-select-own": {
+          "name": "progress-entries-select-own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())"
+        },
+        "progress-entries-insert-own": {
+          "name": "progress-entries-insert-own",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())"
+        },
+        "progress-entries-update-own": {
+          "name": "progress-entries-update-own",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())",
+          "withCheck": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())"
+        },
+        "progress-entries-delete-own": {
+          "name": "progress-entries-delete-own",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.tasks": {
+      "name": "tasks",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "goal_id": {
+          "name": "goal_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "label": {
+          "name": "label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_done": {
+          "name": "is_done",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "done_at": {
+          "name": "done_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_undo_id": {
+          "name": "last_undo_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "prior_is_done": {
+          "name": "prior_is_done",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "tasks_goal_id_fk": {
+          "name": "tasks_goal_id_fk",
+          "tableFrom": "tasks",
+          "tableTo": "goals",
+          "columnsFrom": [
+            "goal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "tasks-select-own": {
+          "name": "tasks-select-own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())"
+        },
+        "tasks-insert-own": {
+          "name": "tasks-insert-own",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())"
+        },
+        "tasks-update-own": {
+          "name": "tasks-update-own",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())",
+          "withCheck": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())"
+        },
+        "tasks-delete-own": {
+          "name": "tasks-delete-own",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "timezone": {
+          "name": "timezone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'UTC'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "users_id_fk": {
+          "name": "users_id_fk",
+          "tableFrom": "users",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "users-select-own": {
+          "name": "users-select-own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "id = auth.uid()"
+        },
+        "users-update-own": {
+          "name": "users-update-own",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "id = auth.uid()",
+          "withCheck": "id = auth.uid()"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.goal_type": {
+      "name": "goal_type",
+      "schema": "public",
+      "values": [
+        "count",
+        "checklist",
+        "habit"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

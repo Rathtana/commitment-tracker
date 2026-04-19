@@ -29,6 +29,13 @@
       "when": 1776627718157,
       "tag": "0004_tasks_undo_id",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1776628243022,
+      "tag": "0005_habit_check_ins_undo",
+      "breakpoints": true
     }
   ]
 }

@@ -169,6 +169,38 @@ export const habitCheckIns = pgTable(
   ],
 )
 
+// ---------- habit_check_in_undos (D-33 undo-by-undoId for habit toggles) ----------
+export const habitCheckInUndos = pgTable(
+  "habit_check_in_undos",
+  {
+    undoId: uuid("undo_id").primaryKey().notNull(),
+    goalId: uuid("goal_id").notNull(),
+    checkInDate: date("check_in_date").notNull(),
+    wasChecked: boolean("was_checked").notNull(), // PRIOR state — true means check-in existed; undo restores by re-inserting
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    foreignKey({ columns: [table.goalId], foreignColumns: [goals.id], name: "habit_check_in_undos_goal_id_fk" }).onDelete("cascade"),
+    pgPolicy("habit-check-in-undos-select-own", {
+      for: "select", to: authenticatedRole,
+      using: sql`EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())`,
+    }),
+    pgPolicy("habit-check-in-undos-insert-own", {
+      for: "insert", to: authenticatedRole,
+      withCheck: sql`EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())`,
+    }),
+    pgPolicy("habit-check-in-undos-update-own", {
+      for: "update", to: authenticatedRole,
+      using: sql`EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())`,
+      withCheck: sql`EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())`,
+    }),
+    pgPolicy("habit-check-in-undos-delete-own", {
+      for: "delete", to: authenticatedRole,
+      using: sql`EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())`,
+    }),
+  ],
+)
+
 // ---------- progress_entries (D-05, D-06) ----------
 export const progressEntries = pgTable(
   "progress_entries",

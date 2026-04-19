@@ -308,6 +308,65 @@ describe('habit_check_ins RLS', () => {
   })
 })
 
+describe('habit_check_in_undos RLS', () => {
+  let habitGoalId: string
+
+  beforeEach(async () => {
+    await cleanChildRows()
+    habitGoalId = randomUUID()
+    await asUser(USER_A, (tx) => tx`
+      INSERT INTO public.goals (id, user_id, month, type, title, target_days)
+      VALUES (${habitGoalId}, ${USER_A}, '2026-04-01', 'habit', 'A habit goal', 20)
+    `)
+  })
+
+  it("USER_B SELECT habit_check_in_undos → 0 rows (A's undo rows hidden)", async () => {
+    const undoId = randomUUID()
+    // Seed an undo row as postgres superuser (bypassing RLS)
+    await sql`
+      INSERT INTO public.habit_check_in_undos (undo_id, goal_id, check_in_date, was_checked)
+      VALUES (${undoId}, ${habitGoalId}, '2026-04-01', false)
+    `
+    const rows = await asUser(USER_B, (tx) =>
+      tx`SELECT undo_id FROM public.habit_check_in_undos WHERE undo_id = ${undoId}`,
+    )
+    expect(rows).toHaveLength(0)
+  })
+
+  it("USER_B INSERT habit_check_in_undos with A's goal_id → rejected by WITH CHECK", async () => {
+    await expect(
+      asUser(USER_B, (tx) => tx`
+        INSERT INTO public.habit_check_in_undos (undo_id, goal_id, check_in_date, was_checked)
+        VALUES (${randomUUID()}, ${habitGoalId}, '2026-04-05', false)
+      `),
+    ).rejects.toThrow(/row-level security/i)
+  })
+
+  it('USER_B UPDATE A habit_check_in_undos → 0 rows affected', async () => {
+    const undoId = randomUUID()
+    await sql`
+      INSERT INTO public.habit_check_in_undos (undo_id, goal_id, check_in_date, was_checked)
+      VALUES (${undoId}, ${habitGoalId}, '2026-04-01', false)
+    `
+    const result = await asUser(USER_B, (tx) =>
+      tx`UPDATE public.habit_check_in_undos SET was_checked = true WHERE undo_id = ${undoId}`,
+    )
+    expect(result.count).toBe(0)
+  })
+
+  it('USER_B DELETE A habit_check_in_undos → 0 rows affected', async () => {
+    const undoId = randomUUID()
+    await sql`
+      INSERT INTO public.habit_check_in_undos (undo_id, goal_id, check_in_date, was_checked)
+      VALUES (${undoId}, ${habitGoalId}, '2026-04-01', false)
+    `
+    const result = await asUser(USER_B, (tx) =>
+      tx`DELETE FROM public.habit_check_in_undos WHERE undo_id = ${undoId}`,
+    )
+    expect(result.count).toBe(0)
+  })
+})
+
 describe('progress_entries RLS', () => {
   let entryId: string
 
