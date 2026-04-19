@@ -54,3 +54,29 @@ describe('undo extension for tasks', () => {
     expect(r.ok).toBe(false)
   })
 })
+
+describe('upsertHabitCheckInAction', () => {
+  it('is exported', async () => {
+    const mod = await import('../src/server/actions/progress')
+    expect(typeof mod.upsertHabitCheckInAction).toBe('function')
+  })
+  it('rejects malformed checkInDate', async () => {
+    const { upsertHabitCheckInAction } = await import('../src/server/actions/progress')
+    const r = await upsertHabitCheckInAction({
+      goalId: '00000000-0000-0000-0000-000000000000',
+      checkInDate: '4/1/2026',
+      isChecked: true,
+      undoId: '00000000-0000-0000-0000-000000000001',
+    } as any)
+    expect(r.ok).toBe(false)
+  })
+  it('rejects missing undoId', async () => {
+    const { upsertHabitCheckInAction } = await import('../src/server/actions/progress')
+    const r = await upsertHabitCheckInAction({
+      goalId: '00000000-0000-0000-0000-000000000000',
+      checkInDate: '2026-04-01',
+      isChecked: true,
+    } as any)
+    expect(r.ok).toBe(false)
+  })
+})
