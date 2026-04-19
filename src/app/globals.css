@@ -32,6 +32,14 @@
 
   --color-secondary:     oklch(96% 0.003 240);    /* zinc-100 */
   --color-secondary-foreground: oklch(15% 0.006 265); /* zinc-900 */
+
+  /* --- Phase 2 additions: pace chip + habit grid states --- */
+  --color-warning:             oklch(70% 0.130 75);
+  --color-warning-foreground:  oklch(26% 0.055 50);
+  --color-warning-muted:       oklch(96% 0.030 88);
+  --color-success:             oklch(66% 0.120 162);
+  --color-success-foreground:  oklch(26% 0.060 161);
+  --color-success-muted:       oklch(95% 0.025 164);
 }
 
 /* Dark mode overrides — prefers-color-scheme only, no toggle */
@@ -62,5 +70,13 @@
 
     --color-secondary:     oklch(20% 0.007 260);    /* zinc-800 */
     --color-secondary-foreground: oklch(96% 0.003 240);
+
+    /* --- Phase 2 additions: pace chip + habit grid states (dark) --- */
+    --color-warning:             oklch(75% 0.140 78);
+    --color-warning-foreground:  oklch(20% 0.040 50);
+    --color-warning-muted:       oklch(22% 0.045 75);
+    --color-success:             oklch(70% 0.125 161);
+    --color-success-foreground:  oklch(15% 0.050 161);
+    --color-success-muted:       oklch(22% 0.050 162);
   }
 }
