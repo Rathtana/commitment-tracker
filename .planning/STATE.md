@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 02-05-PLAN.md (Wave 4 Checklist Card)
-last_updated: "2026-04-19T19:49:10.582Z"
+status: verifying
+stopped_at: Completed 02-06-PLAN.md (Wave 5 Habit Card + Full Phase UAT)
+last_updated: "2026-04-19T20:22:57.659Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 4
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 11
-  completed_plans: 10
-  percent: 91
+  completed_plans: 11
+  percent: 100
 ---
 
 # Project State
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-17)
 
 Phase: 02 (goals-dashboard-three-types) — EXECUTING
 Plan: 6 of 6
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-19
 
 Progress: [██░░░░░░░░] 20%
@@ -66,6 +66,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase 02 P03 | 4 | 2 tasks | 8 files |
 | Phase 02 P04 | 4min | 2 tasks | 6 files |
 | Phase 02 P05 | 5min | 2 tasks | 5 files |
+| Phase 02 P06 | 5min+UAT | 4 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -106,6 +107,9 @@ Recent decisions affecting current work:
 - [Phase 02]: GoalCard index.tsx variant picker with exhaustive never check — checklist/habit stubs return null until Plans 05/06 wire their card components
 - [Phase 02]: D-07: tasks table stores undo metadata inline (priorIsDone + lastUndoId) — set transactionally at flip time; undoLastMutation restores isDone from priorIsDone and clears both fields (no separate audit table)
 - [Phase 02]: D-33 extension: undoLastMutation branches sequentially — count branch (progressEntries) then tasks branch; Plan 06 adds habit branch; single undoId handshake covers all goal types
+- [Phase 02]: D-33 resolution: habit_check_in_undos sibling table chosen because habit_check_ins rows are DELETED on uncheck (composite PK, no row survives); undoLastMutation branches count→tasks→habit sequentially via undoId
+- [Phase 02]: HabitGrid ARIA contract: role=grid on container, role=gridcell on each button, aria-label per cell in format '{MMMM d} — {done|not done|today, done|today, not yet done|future}', aria-pressed mirrors isHit
+- [Phase 02]: Future-date defense in depth: HabitGrid disables future cells UI-side; service layer also asserts checkInDate <= todayStr (T-02-31 mitigation)
 
 ### Pending Todos
 
@@ -126,6 +130,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-04-19T19:49:10.578Z
-Stopped at: Completed 02-05-PLAN.md (Wave 4 Checklist Card)
+Last session: 2026-04-19T20:22:57.655Z
+Stopped at: Completed 02-06-PLAN.md (Wave 5 Habit Card + Full Phase UAT)
 Resume file: None

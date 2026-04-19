@@ -13,7 +13,7 @@ Commitment Tracker ships in four phases that move from load-bearing infrastructu
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Foundations & Auth** - Next.js + Supabase + Drizzle scaffold; email/password auth with reset; polymorphic schema with month-pinned DATE invariant; timezone strategy locked
-- [ ] **Phase 2: Goals & Dashboard (Three Types)** - All three goal types creatable, editable, deletable; one-click progress logging; dashboard with pace-aware progress bars and habit month-grid
+- [x] **Phase 2: Goals & Dashboard (Three Types)** - All three goal types creatable, editable, deletable; one-click progress logging; dashboard with pace-aware progress bars and habit month-grid (completed 2026-04-19)
 - [ ] **Phase 3: Month Navigation, History & Reflection** - URL-routed months; past read-only enforcement; future pre-planning; copy-from-last-month rollover; optional end-of-month reflection
 - [ ] **Phase 4: Launch Polish** - Mobile-responsive final pass at 375px; error toasts that never silently drop input; production deploy with verified cookie flags
 
@@ -53,7 +53,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 02-03-PLAN.md — Wave 2 goal CRUD: create/update/delete server actions + 2-step CreateGoalDialog + DeleteGoalDialog AlertDialog
 - [x] 02-04-PLAN.md — Wave 3 count card: `incrementCountAction` + `backfillCountAction` + `undoLastMutationAction` + CountCard + EarlierDayPopover + Sonner undo contract
 - [x] 02-05-PLAN.md — Wave 4 checklist card: `toggleTaskAction` + tasks undo columns + ChecklistCard + undo extension
-- [ ] 02-06-PLAN.md — Wave 5 habit card: `upsertHabitCheckInAction` + `habit_check_in_undos` table + HabitGrid + HabitCard + full-phase UAT
+- [x] 02-06-PLAN.md — Wave 5 habit card: `upsertHabitCheckInAction` + `habit_check_in_undos` table + HabitGrid + HabitCard + full-phase UAT
 **UI hint**: yes
 
 ### Phase 3: Month Navigation, History & Reflection
@@ -88,7 +88,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundations & Auth | 1/5 | In progress | - |
-| 2. Goals & Dashboard (Three Types) | 5/6 | In Progress|  |
+| 2. Goals & Dashboard (Three Types) | 6/6 | Complete   | 2026-04-19 |
 | 3. Month Navigation, History & Reflection | 0/TBD | Not started | - |
 | 4. Launch Polish | 0/TBD | Not started | - |
 
