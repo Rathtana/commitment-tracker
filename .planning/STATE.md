@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-02-PLAN.md (Wave 1 Dashboard Surface)
-last_updated: "2026-04-19T19:26:26.828Z"
+stopped_at: Completed 02-03-PLAN.md (Wave 2 Goal CRUD)
+last_updated: "2026-04-19T19:34:03.018Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 11
-  completed_plans: 7
-  percent: 64
+  completed_plans: 8
+  percent: 73
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-17)
 ## Current Position
 
 Phase: 02 (goals-dashboard-three-types) — EXECUTING
-Plan: 3 of 6
+Plan: 4 of 6
 Status: Ready to execute
 Last activity: 2026-04-19
 
@@ -63,6 +63,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase 01-foundations-auth P05 | ~26min | 3 tasks | 16 files |
 | Phase 02 P01 | 30 | 5 tasks | 19 files |
 | Phase 02 P02 | 4.5min | 3 tasks | 12 files |
+| Phase 02 P03 | 4 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -96,6 +97,8 @@ Recent decisions affecting current work:
 - [Phase 02]: D-23 resolved: scaleX (not width) animation via Motion — CLS-safe compositor animation, shape-locked in test
 - [Phase 02]: D-25: bg-primary fill never changes by pace — PaceChip communicates pace, bar color invariant
 - [Phase 02]: STATE.md research flag resolved: motion/react scaleX CLS-safe approach confirmed; no Radix Progress override needed
+- [Phase 02]: D-17/D-18/D-19: server-derived month in service layer (monthBucket), type immutability enforced via GoalTypeImmutableError, delete via AlertDialog with exact UI-SPEC copy
+- [Phase 02]: ActionResult<T> pattern: { ok: true; data: T } | { ok: false; error: string } — thin service layer extracts DB mutations from actions; NewGoalButton as client island keeps dashboard/page.tsx a pure RSC
 
 ### Pending Todos
 
@@ -116,6 +119,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-04-19T19:26:26.824Z
-Stopped at: Completed 02-02-PLAN.md (Wave 1 Dashboard Surface)
+Last session: 2026-04-19T19:34:03.014Z
+Stopped at: Completed 02-03-PLAN.md (Wave 2 Goal CRUD)
 Resume file: None
