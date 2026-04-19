@@ -1,0 +1,36 @@
+import { describe, it, expect, vi } from 'vitest'
+
+vi.mock('next/headers', () => ({ cookies: async () => ({ getAll: () => [], set: () => {} }) }))
+vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
+
+describe('src/server/actions/progress.ts exports', () => {
+  it('exports incrementCountAction, backfillCountAction, undoLastMutationAction', async () => {
+    const mod = await import('../src/server/actions/progress')
+    expect(typeof mod.incrementCountAction).toBe('function')
+    expect(typeof mod.backfillCountAction).toBe('function')
+    expect(typeof mod.undoLastMutationAction).toBe('function')
+  })
+})
+
+describe('Zod rejection before side effects', () => {
+  it('incrementCountAction rejects {delta: 0}', async () => {
+    const { incrementCountAction } = await import('../src/server/actions/progress')
+    const r = await incrementCountAction({ goalId: '00000000-0000-0000-0000-000000000000', delta: 0, undoId: '00000000-0000-0000-0000-000000000001' } as any)
+    expect(r.ok).toBe(false)
+  })
+  it('incrementCountAction rejects malformed goalId', async () => {
+    const { incrementCountAction } = await import('../src/server/actions/progress')
+    const r = await incrementCountAction({ goalId: 'not-uuid', delta: 1, undoId: '00000000-0000-0000-0000-000000000001' } as any)
+    expect(r.ok).toBe(false)
+  })
+  it('backfillCountAction rejects invalid ISO date', async () => {
+    const { backfillCountAction } = await import('../src/server/actions/progress')
+    const r = await backfillCountAction({ goalId: '00000000-0000-0000-0000-000000000000', loggedLocalDate: '4/1/2026', delta: 1, undoId: '00000000-0000-0000-0000-000000000001' } as any)
+    expect(r.ok).toBe(false)
+  })
+  it('undoLastMutationAction rejects missing undoId', async () => {
+    const { undoLastMutationAction } = await import('../src/server/actions/progress')
+    const r = await undoLastMutationAction({} as any)
+    expect(r.ok).toBe(false)
+  })
+})
