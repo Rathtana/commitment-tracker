@@ -33,7 +33,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Dashboard
 
-- [ ] **DASH-01**: Dashboard shows all current-month goals in a single scrollable list (no tabs, no drill-down required to log progress)
+- [x] **DASH-01**: Dashboard shows all current-month goals in a single scrollable list (no tabs, no drill-down required to log progress)
 - [x] **DASH-02**: Every goal on the dashboard renders a visual progress bar reflecting its completion percentage
 
 ### Month Navigation & History
@@ -112,7 +112,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PROG-03 | Phase 2 | Complete |
 | PROG-04 | Phase 2 | Complete |
 | PROG-05 | Phase 2 | Complete |
-| DASH-01 | Phase 2 | Pending |
+| DASH-01 | Phase 2 | Complete |
 | DASH-02 | Phase 2 | Complete |
 | MNAV-01 | Phase 3 | Pending |
 | MNAV-02 | Phase 3 | Pending |

@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed Phase 02-01 Wave 0 Foundation
-last_updated: "2026-04-19T19:00:49.032Z"
+stopped_at: Completed 02-02-PLAN.md (Wave 1 Dashboard Surface)
+last_updated: "2026-04-19T19:26:26.828Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 11
-  completed_plans: 6
-  percent: 55
+  completed_plans: 7
+  percent: 64
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-17)
 ## Current Position
 
 Phase: 02 (goals-dashboard-three-types) — EXECUTING
-Plan: 2 of 6
+Plan: 3 of 6
 Status: Ready to execute
 Last activity: 2026-04-19
 
@@ -62,6 +62,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase 01-foundations-auth P04 | ~4.5min | 2 tasks | 8 files |
 | Phase 01-foundations-auth P05 | ~26min | 3 tasks | 16 files |
 | Phase 02 P01 | 30 | 5 tasks | 19 files |
+| Phase 02 P02 | 4.5min | 3 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -92,6 +93,9 @@ Recent decisions affecting current work:
 - [Phase 02]: D-01..D-08: Polymorphic parent (goals) + typed child tables with JOIN-via-goal_id RLS; no user_id on children
 - [Phase 02]: D-10..D-14: computeProgress warming-up guard daysElapsed<5; checklist always on-pace (no time axis D-12); paceFromDelta threshold ±2
 - [Phase 02]: Zod 4 UUID: uuid() enforces RFC 4122 version+variant nibbles strictly; test UUIDs must be valid v4 or nil (not all-same-digit)
+- [Phase 02]: D-23 resolved: scaleX (not width) animation via Motion — CLS-safe compositor animation, shape-locked in test
+- [Phase 02]: D-25: bg-primary fill never changes by pace — PaceChip communicates pace, bar color invariant
+- [Phase 02]: STATE.md research flag resolved: motion/react scaleX CLS-safe approach confirmed; no Radix Progress override needed
 
 ### Pending Todos
 
@@ -112,6 +116,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-04-19T19:00:49.028Z
-Stopped at: Completed Phase 02-01 Wave 0 Foundation
+Last session: 2026-04-19T19:26:26.824Z
+Stopped at: Completed 02-02-PLAN.md (Wave 1 Dashboard Surface)
 Resume file: None
