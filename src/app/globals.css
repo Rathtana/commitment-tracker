@@ -6,15 +6,6 @@
   --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, monospace;
 
-  /* --- Spacing (8-point scale) --- */
-  --spacing-xs:  4px;
-  --spacing-sm:  8px;
-  --spacing-md:  16px;
-  --spacing-lg:  24px;
-  --spacing-xl:  32px;
-  --spacing-2xl: 48px;
-  --spacing-3xl: 64px;
-
   /* --- Light mode palette --- */
   --color-background:    oklch(99% 0 0);         /* zinc-50 near-white */
   --color-foreground:    oklch(15% 0.006 265);    /* zinc-900 */

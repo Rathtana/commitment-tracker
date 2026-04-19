@@ -62,14 +62,11 @@ Place in `src/app/globals.css` directly under `@import "tailwindcss"`:
   --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, monospace;
 
-  /* --- Spacing (8-point scale) --- */
-  --spacing-xs:  4px;
-  --spacing-sm:  8px;
-  --spacing-md:  16px;
-  --spacing-lg:  24px;
-  --spacing-xl:  32px;
-  --spacing-2xl: 48px;
-  --spacing-3xl: 64px;
+  /* Spacing (8-point scale): use Tailwind's default utilities.
+     Do NOT define custom `--spacing-xs/sm/md/lg/xl/...` tokens here —
+     they collide with Tailwind v4's `max-w-*` scale (which derives from
+     `--spacing-*`) and break `max-w-sm` etc. Default utilities already
+     provide 4/8/16/24/32/48/64 via `p-1`, `p-2`, `p-4`, `p-6`, `p-8`, `p-12`, `p-16`. */
 
   /* --- Light mode palette --- */
   --color-background:    oklch(99% 0 0);         /* zinc-50 near-white */
