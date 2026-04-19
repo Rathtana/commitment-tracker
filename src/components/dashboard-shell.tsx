@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { CreateGoalDialog } from '@/components/create-goal-dialog'
 import { DeleteGoalDialog } from '@/components/delete-goal-dialog'
 import { GoalCard } from '@/components/goal-card'
-import { incrementCountAction, backfillCountAction, undoLastMutationAction } from '@/server/actions/progress'
+import { incrementCountAction, backfillCountAction, undoLastMutationAction, toggleTaskAction } from '@/server/actions/progress'
 
 // Discriminated action union — Waves 3/4/5 use dispatch from matching card components.
 export type DashboardAction =
@@ -156,6 +156,26 @@ export function DashboardShell({ initialGoals, userTz, nowIso, daysInMonthDefaul
     [goals],
   )
 
+  const handleChecklistToggle = useCallback(
+    (goalId: string, taskId: string, isDone: boolean, taskLabel: string) => {
+      const undoId = crypto.randomUUID()
+      startTransition(async () => {
+        dispatch({ type: 'checklist:toggle', goalId, taskId, isDone })
+        const result = await toggleTaskAction({ goalId, taskId, isDone, undoId })
+        if (!result.ok) {
+          toast.error(result.error ?? "Couldn't save that change. Try again.")
+          return
+        }
+        const verb = isDone ? 'Checked' : 'Unchecked'
+        showUndoToast(`${verb} "${taskLabel}"`, undoId, () => {
+          dispatch({ type: 'checklist:toggle', goalId, taskId, isDone: !isDone })
+        })
+      })
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [goals],
+  )
+
   function buildEditingGoal(goal: Goal): Parameters<typeof CreateGoalDialog>[0]['editing'] {
     const base = {
       goalId: goal.id,
@@ -182,6 +202,7 @@ export function DashboardShell({ initialGoals, userTz, nowIso, daysInMonthDefaul
   const handlers = {
     onCountIncrement: handleCountIncrement,
     onCountBackfill: handleCountBackfill,
+    onChecklistToggle: handleChecklistToggle,
     onEdit: (goal: Goal) => {
       setEditingGoal(buildEditingGoal(goal))
       setCreateOpen(true)
