@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 UI-SPEC approved
-last_updated: "2026-04-18T06:00:29.306Z"
-last_activity: 2026-04-18 -- Phase 1 planning complete
+stopped_at: Completed 01-01-PLAN.md (scaffold)
+last_updated: "2026-04-19T02:15:43.879Z"
+last_activity: 2026-04-19
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 5
-  completed_plans: 0
-  percent: 0
+  completed_plans: 1
+  percent: 20
 ---
 
 # Project State
@@ -21,37 +21,41 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** The visual feedback has to feel good enough that users *want* to open the dashboard — progress bars moving is the draw, everything else supports that.
-**Current focus:** Phase 1 — Foundations & Auth
+**Current focus:** Phase 01 — foundations-auth
 
 ## Current Position
 
-Phase: 1 of 4 (Foundations & Auth)
-Plan: 0 of TBD in current phase
-Status: Ready to execute
-Last activity: 2026-04-18 -- Phase 1 planning complete
+Phase: 01 (foundations-auth) — EXECUTING
+Plan: 2 of 5
+Status: Executing Phase 01 (Plan 01-01 complete; next up: 01-02 timezone tests)
+Last activity: 2026-04-19 -- 01-01 scaffold complete, Supabase linked
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 0
-- Average duration: —
-- Total execution time: —
+- Total plans completed: 1
+- Average duration: ~2min (post-resume; excludes human-action checkpoint wait)
+- Total execution time: ~2min automated + ~27h checkpoint wait
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 01-foundations-auth | 1 | ~2min | ~2min |
 
 **Recent Trend:**
 
-- Last 5 plans: —
-- Trend: —
+- Last 5 plans: 01-01 (~2min, 3 tasks, 22 files)
+- Trend: First plan shipped; baseline established
 
 *Updated after each plan completion*
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| Phase 01-foundations-auth P01 | 2min (after resume) | 3 tasks | 22 files |
 
 ## Accumulated Context
 
@@ -66,6 +70,9 @@ Recent decisions affecting current work:
 - Research: Stack locked to Next.js 16 + React 19 + Tailwind v4 + shadcn + Motion 12 + Supabase + Drizzle
 - Research: Polymorphic parent (`goals`) + typed child tables (`tasks`, `habit_check_ins`) — JSONB rejected for core entity data
 - Research: Month stored as `DATE` pinned to first-of-month with CHECK constraint; "X of N days this month" framing instead of punishing streak counters
+- [Phase 01-foundations-auth]: Plan 01-01: Scaffold-into-tmp workaround used — create-next-app 16.2.4 refuses to run over pre-existing .planning/.claude; copy non-clobbering files back
+- [Phase 01-foundations-auth]: Plan 01-01: Supabase env key dual-named — both NEXT_PUBLIC_SUPABASE_ANON_KEY and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY alias the sb_publishable_* value so downstream code works with either convention
+- [Phase 01-foundations-auth]: Plan 01-01: drizzle.config.ts emits to ./supabase/migrations (NOT ./drizzle) so supabase db push --linked picks up the SQL — Pitfall 4 compliance
 
 ### Pending Todos
 
@@ -86,6 +93,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-04-18T05:00:50.189Z
-Stopped at: Phase 1 UI-SPEC approved
-Resume file: .planning/phases/01-foundations-auth/01-UI-SPEC.md
+Last session: 2026-04-19T02:15:35.327Z
+Stopped at: Completed 01-01-PLAN.md (scaffold)
+Resume file: .planning/phases/01-foundations-auth/01-02-PLAN.md
