@@ -32,7 +32,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 5 plans
 - [x] 01-01-PLAN.md — Scaffold Next.js 16 + shadcn + Tailwind v4 + Vitest + Drizzle config + Supabase project checkpoint
 - [x] 01-02-PLAN.md — Pure isomorphic `today()` + `monthBucket()` with D-23 Vitest fixture suite (timezone, DST, leap year, NYE)
-- [ ] 01-03-PLAN.md — Drizzle schema (public.users + goals) + RLS policies + custom SQL migration (CHECK + trigger) + `supabase db push` [BLOCKING] + RLS stub test
+- [x] 01-03-PLAN.md — Drizzle schema (public.users + goals) + RLS policies + custom SQL migration (CHECK + trigger) + `supabase db push` [BLOCKING] + RLS stub test
 - [ ] 01-04-PLAN.md — `@supabase/ssr` middleware + `/auth/callback` route handler + shared Zod schemas + 5 server actions (signup/signin/signout/reset/update)
 - [ ] 01-05-PLAN.md — 6 auth surfaces (login/signup/reset/reset-complete/verify/error) + landing stub + password toggle + manual UAT checkpoint
 **UI hint**: yes

@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-02-PLAN.md (timezone pure functions)
-last_updated: "2026-04-19T02:22:41.317Z"
+stopped_at: Completed 01-03 (schema + RLS migration). Ready for Plan 01-04 (auth server actions + middleware).
+last_updated: "2026-04-19T02:50:31.790Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 5
-  completed_plans: 2
-  percent: 40
+  completed_plans: 3
+  percent: 60
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-17)
 ## Current Position
 
 Phase: 01 (foundations-auth) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 Status: Ready to execute
 Last activity: 2026-04-19
 
@@ -57,6 +57,7 @@ Progress: [██░░░░░░░░] 20%
 |------|----------|-------|-------|
 | Phase 01-foundations-auth P01 | 2min (after resume) | 3 tasks | 22 files |
 | Phase 01-foundations-auth P02 | 3min | 2 tasks | 2 files |
+| Phase 01-foundations-auth P03 | 3min | 4 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -75,6 +76,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundations-auth]: Plan 01-01: Supabase env key dual-named — both NEXT_PUBLIC_SUPABASE_ANON_KEY and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY alias the sb_publishable_* value so downstream code works with either convention
 - [Phase 01-foundations-auth]: Plan 01-01: drizzle.config.ts emits to ./supabase/migrations (NOT ./drizzle) so supabase db push --linked picks up the SQL — Pitfall 4 compliance
 - [Phase 01-foundations-auth]: Plan 01-02: auto-fixed 3 DST-related fixture bugs copied verbatim from 01-RESEARCH.md — test intent (local-time boundaries) preserved, UTC inputs corrected to match real DST rules for LA April 1 (PDT) and NY March 8 (post-spring-forward EDT)
+- [Phase 01-foundations-auth]: Plan 01-03: public.users + public.goals tables live in Supabase dev project; 6 RLS policies + month_is_first_of_month CHECK + on_auth_user_created trigger all applied and verified
+- [Phase 01-foundations-auth]: Plan 01-03: RLS test uses SET LOCAL role=authenticated + forged request.jwt.claims (no Supabase admin SDK needed); seeds via auth.users INSERT to exercise on_auth_user_created trigger alongside D-21/D-22
+- [Phase 01-foundations-auth]: Plan 01-03: psql not available locally; post-push verification uses inline node -e + postgres.js (same driver in node_modules). Shell env loading standardised to set -a; source .env.local; set +a with quoted DATABASE_URL
 
 ### Pending Todos
 
@@ -95,6 +99,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-04-19T02:22:41.313Z
-Stopped at: Completed 01-02-PLAN.md (timezone pure functions)
+Last session: 2026-04-19T02:50:31.786Z
+Stopped at: Completed 01-03 (schema + RLS migration). Ready for Plan 01-04 (auth server actions + middleware).
 Resume file: None

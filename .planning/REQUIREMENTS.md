@@ -20,7 +20,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **GOAL-01**: User can create a goal with a name, type (count / checklist / habit), target, optional notes, and an associated month
 - [ ] **GOAL-02**: User can edit a goal that belongs to the current or a future month
 - [ ] **GOAL-03**: User can delete a goal with a confirmation step
-- [ ] **GOAL-04**: Every goal is scoped to a specific month (stored as a DATE pinned to the first of that month)
+- [x] **GOAL-04**: Every goal is scoped to a specific month (stored as a DATE pinned to the first of that month)
 - [ ] **GOAL-05**: User can pre-set goals for future months by navigating forward before the month begins
 
 ### Progress Logging
@@ -105,7 +105,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | GOAL-01 | Phase 2 | Pending |
 | GOAL-02 | Phase 2 | Pending |
 | GOAL-03 | Phase 2 | Pending |
-| GOAL-04 | Phase 1 | Pending |
+| GOAL-04 | Phase 1 | Complete |
 | GOAL-05 | Phase 3 | Pending |
 | PROG-01 | Phase 2 | Pending |
 | PROG-02 | Phase 2 | Pending |
