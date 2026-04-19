@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-01-PLAN.md (scaffold)
-last_updated: "2026-04-19T02:15:43.879Z"
+stopped_at: Completed 01-02-PLAN.md (timezone pure functions)
+last_updated: "2026-04-19T02:22:41.317Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 5
-  completed_plans: 1
-  percent: 20
+  completed_plans: 2
+  percent: 40
 ---
 
 # Project State
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-04-17)
 ## Current Position
 
 Phase: 01 (foundations-auth) — EXECUTING
-Plan: 2 of 5
-Status: Executing Phase 01 (Plan 01-01 complete; next up: 01-02 timezone tests)
-Last activity: 2026-04-19 -- 01-01 scaffold complete, Supabase linked
+Plan: 3 of 5
+Status: Ready to execute
+Last activity: 2026-04-19
 
 Progress: [██░░░░░░░░] 20%
 
@@ -56,6 +56,7 @@ Progress: [██░░░░░░░░] 20%
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | Phase 01-foundations-auth P01 | 2min (after resume) | 3 tasks | 22 files |
+| Phase 01-foundations-auth P02 | 3min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -73,6 +74,7 @@ Recent decisions affecting current work:
 - [Phase 01-foundations-auth]: Plan 01-01: Scaffold-into-tmp workaround used — create-next-app 16.2.4 refuses to run over pre-existing .planning/.claude; copy non-clobbering files back
 - [Phase 01-foundations-auth]: Plan 01-01: Supabase env key dual-named — both NEXT_PUBLIC_SUPABASE_ANON_KEY and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY alias the sb_publishable_* value so downstream code works with either convention
 - [Phase 01-foundations-auth]: Plan 01-01: drizzle.config.ts emits to ./supabase/migrations (NOT ./drizzle) so supabase db push --linked picks up the SQL — Pitfall 4 compliance
+- [Phase 01-foundations-auth]: Plan 01-02: auto-fixed 3 DST-related fixture bugs copied verbatim from 01-RESEARCH.md — test intent (local-time boundaries) preserved, UTC inputs corrected to match real DST rules for LA April 1 (PDT) and NY March 8 (post-spring-forward EDT)
 
 ### Pending Todos
 
@@ -93,6 +95,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-04-19T02:15:35.327Z
-Stopped at: Completed 01-01-PLAN.md (scaffold)
-Resume file: .planning/phases/01-foundations-auth/01-02-PLAN.md
+Last session: 2026-04-19T02:22:41.313Z
+Stopped at: Completed 01-02-PLAN.md (timezone pure functions)
+Resume file: None
