@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: "Completed 01-04 (auth backbone: middleware, callback, 5 server actions, Zod schemas). Ready for Plan 01-05 (auth UI)."
-last_updated: "2026-04-19T02:59:08.530Z"
+status: verifying
+stopped_at: Completed Plan 01-05 (auth UI + landing stub). Phase 01 ready for verification.
+last_updated: "2026-04-19T04:30:09.656Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 5
-  completed_plans: 4
-  percent: 80
+  completed_plans: 5
+  percent: 100
 ---
 
 # Project State
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-17)
 
 Phase: 01 (foundations-auth) — EXECUTING
 Plan: 5 of 5
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-19
 
 Progress: [██░░░░░░░░] 20%
@@ -59,6 +59,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase 01-foundations-auth P02 | 3min | 2 tasks | 2 files |
 | Phase 01-foundations-auth P03 | 3min | 4 tasks | 9 files |
 | Phase 01-foundations-auth P04 | ~4.5min | 2 tasks | 8 files |
+| Phase 01-foundations-auth P05 | ~26min | 3 tasks | 16 files |
 
 ## Accumulated Context
 
@@ -83,6 +84,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundations-auth]: Plan 01-04: Supabase env key fallback chain in server factory + middleware (read NEXT_PUBLIC_SUPABASE_ANON_KEY ?? NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) — keeps downstream code working if the alias is removed.
 - [Phase 01-foundations-auth]: Plan 01-04: signInAction explicitly calls supabase.auth.signOut() on unverified login attempt so no half-session cookie persists (belt-and-suspenders D-16 mitigation).
 - [Phase 01-foundations-auth]: Plan 01-04: Vitest @/ path alias added in this plan (Rule 3 — blocking fix). Prior plans' tests used relative imports; action tests forced the alias.
+- [Phase 01-foundations-auth]: Plan 01-05: Zod 4 + RHF typing handled via z.input<typeof schema> (not z.infer) for SignUpForm — schemas with .default() produce divergent input/output shapes; RHF holds input, server actions consume output.
+- [Phase 01-foundations-auth]: Plan 01-05: Tailwind v4 @theme token hygiene — never override --spacing-xs/sm/md/lg/xl/2xl named tokens; they power max-w-*, w-*, p-*, gap-*, space-*. Fixed globals.css AND 01-UI-SPEC.md so downstream phases don't re-introduce the collision.
+- [Phase 01-foundations-auth]: Plan 01-05: Auth routes nested under src/app/(auth)/auth/ (not (auth) root) so URLs match Plan 04 middleware AUTH_ROUTES + server action redirectTo hardcoded /auth/* paths; route-group parens still apply shared card layout.
 
 ### Pending Todos
 
@@ -103,6 +107,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-04-19T02:59:08.527Z
-Stopped at: Completed 01-04 (auth backbone: middleware, callback, 5 server actions, Zod schemas). Ready for Plan 01-05 (auth UI).
+Last session: 2026-04-19T04:30:09.652Z
+Stopped at: Completed Plan 01-05 (auth UI + landing stub). Phase 01 ready for verification.
 Resume file: None
