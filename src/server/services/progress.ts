@@ -1,12 +1,13 @@
 import { and, eq, sql } from "drizzle-orm"
 import { db } from "@/server/db"
-import { goals, progressEntries, tasks } from "@/server/db/schema"
+import { goals, progressEntries, tasks, habitCheckIns, habitCheckInUndos } from "@/server/db/schema"
 import { today, monthBucket } from "@/lib/time"
 import type {
   IncrementCountInput,
   BackfillCountInput,
   UndoLastMutationInput,
   ToggleTaskInput,
+  UpsertHabitCheckInInput,
 } from "@/lib/schemas/goals"
 
 export class GoalNotFoundError extends Error {
@@ -132,6 +133,48 @@ export async function toggleTask(userId: string, userTz: string, input: ToggleTa
   })
 }
 
+export async function upsertHabitCheckIn(userId: string, userTz: string, input: UpsertHabitCheckInInput) {
+  const now = new Date()
+  const currentMonth = isoDate(monthBucket(now, userTz))
+  const todayStr = today(now, userTz)
+
+  // Business rules: no future dates, must be in current month
+  if (input.checkInDate > todayStr) throw new OutOfMonthError()
+  if (input.checkInDate.slice(0, 7) !== currentMonth.slice(0, 7)) throw new OutOfMonthError()
+
+  return db.transaction(async (tx) => {
+    const g = await loadOwnedGoal(tx, userId, input.goalId)
+    if (g.type !== "habit") throw new WrongGoalTypeError()
+    if (g.month !== currentMonth) throw new OutOfMonthError()
+
+    // Record prior state for undo (inside same transaction — T-02-33)
+    const priorRows = await tx
+      .select({ d: habitCheckIns.checkInDate })
+      .from(habitCheckIns)
+      .where(and(eq(habitCheckIns.goalId, input.goalId), eq(habitCheckIns.checkInDate, input.checkInDate)))
+      .limit(1)
+    const wasChecked = priorRows.length > 0
+
+    await tx.insert(habitCheckInUndos).values({
+      undoId: input.undoId,
+      goalId: input.goalId,
+      checkInDate: input.checkInDate,
+      wasChecked,
+    })
+
+    if (input.isChecked) {
+      await tx
+        .insert(habitCheckIns)
+        .values({ goalId: input.goalId, checkInDate: input.checkInDate })
+        .onConflictDoNothing()
+    } else {
+      await tx
+        .delete(habitCheckIns)
+        .where(and(eq(habitCheckIns.goalId, input.goalId), eq(habitCheckIns.checkInDate, input.checkInDate)))
+    }
+  })
+}
+
 export async function undoLastMutation(userId: string, input: UndoLastMutationInput) {
   return db.transaction(async (tx) => {
     // Try count branch (progress_entries)
@@ -182,7 +225,38 @@ export async function undoLastMutation(userId: string, input: UndoLastMutationIn
       return { reversed: "checklist" as const }
     }
 
-    // Plan 06: extend to search habit_check_ins by undoId
+    // Try habit branch (habit_check_in_undos) — T-02-34
+    const [h] = await tx
+      .select({
+        undoId: habitCheckInUndos.undoId,
+        goalId: habitCheckInUndos.goalId,
+        checkInDate: habitCheckInUndos.checkInDate,
+        wasChecked: habitCheckInUndos.wasChecked,
+      })
+      .from(habitCheckInUndos)
+      .innerJoin(goals, eq(goals.id, habitCheckInUndos.goalId))
+      .where(and(eq(habitCheckInUndos.undoId, input.undoId), eq(goals.userId, userId)))
+      .limit(1)
+
+    if (h) {
+      // Reverse: restore prior state
+      if (h.wasChecked) {
+        // Prior state was checked-in → re-insert the check_in
+        await tx
+          .insert(habitCheckIns)
+          .values({ goalId: h.goalId, checkInDate: h.checkInDate })
+          .onConflictDoNothing()
+      } else {
+        // Prior state was not checked-in → delete the check_in if present
+        await tx
+          .delete(habitCheckIns)
+          .where(and(eq(habitCheckIns.goalId, h.goalId), eq(habitCheckIns.checkInDate, h.checkInDate)))
+      }
+      // Remove the undo record so it can't be re-undone
+      await tx.delete(habitCheckInUndos).where(eq(habitCheckInUndos.undoId, h.undoId))
+      return { reversed: "habit" as const }
+    }
+
     throw new UndoNotFoundError()
   })
 }

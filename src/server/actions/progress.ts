@@ -10,16 +10,19 @@ import {
   backfillCountSchema,
   undoLastMutationSchema,
   toggleTaskSchema,
+  upsertHabitCheckInSchema,
   type IncrementCountInput,
   type BackfillCountInput,
   type UndoLastMutationInput,
   type ToggleTaskInput,
+  type UpsertHabitCheckInInput,
 } from "@/lib/schemas/goals"
 import {
   incrementCount,
   backfillCount,
   undoLastMutation,
   toggleTask,
+  upsertHabitCheckIn,
   GoalNotFoundError,
   OutOfMonthError,
   WrongGoalTypeError,
@@ -107,6 +110,24 @@ export async function toggleTaskAction(input: ToggleTaskInput): Promise<ActionRe
   const userTz = await resolveUserTz(user.id)
   try {
     await toggleTask(user.id, userTz, parsed.data)
+    revalidatePath("/dashboard")
+    return { ok: true, data: undefined }
+  } catch (e) {
+    return { ok: false, error: mapServiceError(e) }
+  }
+}
+
+export async function upsertHabitCheckInAction(input: UpsertHabitCheckInInput): Promise<ActionResult> {
+  const parsed = upsertHabitCheckInSchema.safeParse(input)
+  if (!parsed.success) return { ok: false, error: "Invalid input." }
+  const supabase = await getSupabaseServerClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { ok: false, error: "Not authenticated." }
+  const userTz = await resolveUserTz(user.id)
+  try {
+    await upsertHabitCheckIn(user.id, userTz, parsed.data)
     revalidatePath("/dashboard")
     return { ok: true, data: undefined }
   } catch (e) {
