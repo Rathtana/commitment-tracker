@@ -34,3 +34,23 @@ describe('Zod rejection before side effects', () => {
     expect(r.ok).toBe(false)
   })
 })
+
+describe('toggleTaskAction', () => {
+  it('is exported', async () => {
+    const mod = await import('../src/server/actions/progress')
+    expect(typeof mod.toggleTaskAction).toBe('function')
+  })
+  it('rejects malformed input', async () => {
+    const { toggleTaskAction } = await import('../src/server/actions/progress')
+    const r = await toggleTaskAction({ goalId: 'bad', taskId: 'bad', isDone: 'yes' } as any)
+    expect(r.ok).toBe(false)
+  })
+})
+
+describe('undo extension for tasks', () => {
+  it('undoLastMutationAction still rejects malformed undoId', async () => {
+    const { undoLastMutationAction } = await import('../src/server/actions/progress')
+    const r = await undoLastMutationAction({} as any)
+    expect(r.ok).toBe(false)
+  })
+})
