@@ -4,9 +4,9 @@ import { startOfMonth, differenceInCalendarDays, getDaysInMonth } from 'date-fns
 export type Pace = 'on-pace' | 'behind' | 'ahead' | 'warming-up'
 
 export type Goal =
-  | { id: string; type: 'count'; targetCount: number; currentCount: number; month: Date }
-  | { id: string; type: 'checklist'; tasks: { isDone: boolean }[]; month: Date }
-  | { id: string; type: 'habit'; targetDays: number; checkIns: string[]; month: Date }
+  | { id: string; type: 'count'; targetCount: number; currentCount: number; month: Date; title?: string; notes?: string; position?: string }
+  | { id: string; type: 'checklist'; tasks: { isDone: boolean; id?: string; label?: string; position?: number }[]; month: Date; title?: string; notes?: string; position?: string }
+  | { id: string; type: 'habit'; targetDays: number; checkIns: string[]; month: Date; title?: string; notes?: string; position?: string }
 
 export interface ProgressSnapshot {
   percent: number
