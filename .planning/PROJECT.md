@@ -15,15 +15,15 @@ The visual feedback has to feel good enough that users *want* to open the dashbo
 <!-- Shipped and confirmed valuable. -->
 
 - [x] User can sign up and log in (public product) — *Validated in Phase 1: Foundations & Auth*
+- [x] User can create goals for a specific month — *Validated in Phase 2: Goals & Dashboard (Three Types)*
+- [x] User supports three goal types: count-based, task checklist, habit/streak — *Validated in Phase 2*
+- [x] User can log progress against each goal (increment count, check task, mark habit done) — *Validated in Phase 2*
+- [x] Dashboard shows all current-month goals at a glance with visual progress bars — *Validated in Phase 2*
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
 
-- [ ] User can create goals for a specific month
-- [ ] User supports three goal types: count-based, task checklist, habit/streak
-- [ ] User can log progress against each goal (increment count, check task, mark habit done)
-- [ ] Dashboard shows all current-month goals at a glance with visual progress bars
 - [ ] User can view past months' goals read-only
 - [ ] User can pre-set goals for future months (not restricted to current month)
 - [ ] On the 1st, the new-month dashboard starts blank unless the user pre-set goals or copies from last month
@@ -82,4 +82,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-19 after Phase 1: Foundations & Auth complete*
+*Last updated: 2026-04-19 after Phase 2: Goals & Dashboard (Three Types) complete*
