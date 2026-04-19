@@ -5,8 +5,9 @@ describe('today()', () => {
   afterEach(() => vi.useRealTimers())
 
   it('UTC-8: 11:30 PM on March 31 → March 31', () => {
-    // 2026-04-01 07:30 UTC = 2026-03-31 23:30 America/Los_Angeles (UTC-7 DST, or UTC-8 PST)
-    const now = new Date('2026-04-01T07:30:00.000Z')
+    // 2026-04-01 06:30 UTC = 2026-03-31 23:30 America/Los_Angeles (PDT, UTC-7; DST started Mar 8)
+    // (Research-doc fixture had 07:30 UTC which assumed PST (UTC-8); corrected for actual PDT.)
+    const now = new Date('2026-04-01T06:30:00.000Z')
     expect(today(now, 'America/Los_Angeles')).toBe('2026-03-31')
   })
 
@@ -22,8 +23,12 @@ describe('today()', () => {
   })
 
   it('DST spring-forward: 11:30 PM on March 8 2026 in America/New_York', () => {
-    // 2026-03-09 04:30 UTC = 2026-03-08 23:30 EST (UTC-5, pre-spring-forward)
-    const now = new Date('2026-03-09T04:30:00.000Z')
+    // March 8 2026 is the US spring-forward day. The clock jumps 2AM → 3AM local,
+    // so by 23:30 local on March 8 NY is already on EDT (UTC-4).
+    // 2026-03-09 03:30 UTC = 2026-03-08 23:30 EDT.
+    // (Research-doc fixture had 04:30 UTC tagged "EST (UTC-5)"; corrected for actual
+    // post-spring-forward EDT to exercise the DST boundary honestly.)
+    const now = new Date('2026-03-09T03:30:00.000Z')
     expect(today(now, 'America/New_York')).toBe('2026-03-08')
   })
 
@@ -45,7 +50,10 @@ describe('today()', () => {
 
 describe('monthBucket()', () => {
   it('UTC-8: 11:30 PM March 31 → March 1 (not April 1)', () => {
-    const now = new Date('2026-04-01T07:30:00.000Z')
+    // 2026-04-01 06:30 UTC = 2026-03-31 23:30 LA (PDT, UTC-7; DST started Mar 8).
+    // (Research-doc fixture had 07:30 UTC assuming PST; corrected for PDT — same
+    // rationale as the today() LA fixture above.)
+    const now = new Date('2026-04-01T06:30:00.000Z')
     const bucket = monthBucket(now, 'America/Los_Angeles')
     expect(bucket.toISOString().slice(0, 10)).toBe('2026-03-01')
   })
