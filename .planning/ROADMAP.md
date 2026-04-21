@@ -66,7 +66,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can pre-set goals for any future month before it begins by navigating forward and creating goals there
   4. On the 1st of a new month the dashboard starts blank unless the user pre-set goals, and a visible "Welcome to [Month]" prompt offers Copy-from-last-month or Start-fresh in one click
   5. Past-month and end-of-month views show an optional two-line reflection field ("what worked / what didn't") that the user can save and revisit
-**Plans**: TBD
+**Plans**: 5 plans
+- [ ] 03-01-PLAN.md — Wave 0 foundation: `compareMonth`/`formatMonthSegment`/`parseMonthSegment` time helpers + `monthSegmentSchema` + `reflectionSchema` + Vitest fixture coverage
+- [ ] 03-02-PLAN.md — Wave 1 service: rename `OutOfMonthError` → `ReadOnlyMonthError`, extend `updateGoal`/`deleteGoal` with past-blocked-future-allowed guard + service-level enforcement test
+- [ ] 03-03-PLAN.md — Wave 1 schema: `month_reflections` Drizzle table + 2 migrations + [BLOCKING] supabase db push + upsertReflection service/action + countGoalsInMonth + getReflectionForMonth
+- [ ] 03-04-PLAN.md — Wave 2 route: `/dashboard` → redirect + `/dashboard/[month]` dynamic RSC + MonthNavigator (keyboard shortcuts) + PastMonthReadOnly + PastEmptyState + GoalCard variant refactor
+- [ ] 03-05-PLAN.md — Wave 3 UI: shadcn Textarea + `copyGoalsFromLastMonth` service/action + WelcomeToMonth + ReflectionCard + route wiring + full-phase UAT
 **UI hint**: yes
 
 ### Phase 4: Launch Polish
