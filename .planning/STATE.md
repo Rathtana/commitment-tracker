@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-03-reflections-schema-service-PLAN.md
-last_updated: "2026-04-27T05:15:29.539Z"
+stopped_at: Completed 03-04-month-route-navigator-readonly-PLAN.md
+last_updated: "2026-04-27T05:30:10.360Z"
 last_activity: 2026-04-27 -- Phase --phase execution started
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 16
-  completed_plans: 14
-  percent: 88
+  completed_plans: 15
+  percent: 94
 ---
 
 # Project State
@@ -30,7 +30,7 @@ Plan: 1 of --name
 Status: Executing Phase --phase
 Last activity: 2026-04-27 -- Phase --phase execution started
 
-Progress: [█████████░] 88%
+Progress: [█████████░] 94%
 
 ## Performance Metrics
 
@@ -71,6 +71,7 @@ Progress: [█████████░] 88%
 | Phase 03 P01 | 4min | 2 tasks | 7 files |
 | Phase 03-month-navigation-history-reflection P02 | 5 | 2 tasks | 7 files |
 | Phase 03-month-navigation-history-reflection P3 | 25min | 4 tasks | 8 files |
+| Phase 03-month-navigation-history-reflection P4 | 9min | 5 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -121,6 +122,9 @@ Recent decisions affecting current work:
 - Migration 0006 drizzle-kit suffix: 0006_salty_jack_power.sql (drizzle-kit chosen — not renamed per plan note)
 - FutureMonthReflectionError defined in service but action handles compareMonth check before calling service — class exists for type safety only
 - TDD mock pattern: vi.mock (hoisted) required over vi.doMock for module-level interception — mirrors actions.goals.test.ts pattern
+- progressDisabled prop (not variant='future-planning'): cleaner separation — variant controls presence/absence of affordances, progressDisabled controls disabled state while keeping kebab live for CRUD (D-09/D-11)
+- rightCluster ReactNode slot in MonthNavigator: RSC page computes Today/NewGoal visibility server-side and passes as ReactNode to client component — avoids boolean props for server-computed state
+- PastMonthReadOnly is pure RSC (no 'use client'): DashboardShell never mounted on past-month routes — D-13/14/15 honored at architecture level, not just UI gating
 
 ### Pending Todos
 
@@ -141,6 +145,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-04-27T05:15:29.513Z
-Stopped at: Completed 03-03-reflections-schema-service-PLAN.md
+Last session: 2026-04-27T05:30:10.351Z
+Stopped at: Completed 03-04-month-route-navigator-readonly-PLAN.md
 Resume file: None
