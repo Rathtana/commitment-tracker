@@ -3,6 +3,17 @@ import { describe, it, expect, vi } from 'vitest'
 vi.mock('next/headers', () => ({ cookies: async () => ({ getAll: () => [], set: () => {} }) }))
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 
+describe('ReadOnlyMonthError class contract', () => {
+  it('is exported from services/progress', async () => {
+    const { ReadOnlyMonthError } = await import('../src/server/services/progress')
+    expect(ReadOnlyMonthError).toBeDefined()
+  })
+  it('has message "This month is archived."', async () => {
+    const { ReadOnlyMonthError } = await import('../src/server/services/progress')
+    expect(new ReadOnlyMonthError().message).toBe('This month is archived.')
+  })
+})
+
 describe('src/server/actions/progress.ts exports', () => {
   it('exports incrementCountAction, backfillCountAction, undoLastMutationAction', async () => {
     const mod = await import('../src/server/actions/progress')

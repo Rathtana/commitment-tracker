@@ -24,7 +24,7 @@ import {
   toggleTask,
   upsertHabitCheckIn,
   GoalNotFoundError,
-  OutOfMonthError,
+  ReadOnlyMonthError,
   WrongGoalTypeError,
   UndoNotFoundError,
   TaskNotFoundError,
@@ -39,7 +39,7 @@ async function resolveUserTz(userId: string): Promise<string> {
 
 function mapServiceError(e: unknown): string {
   if (e instanceof GoalNotFoundError) return "Goal not found or not owned by you."
-  if (e instanceof OutOfMonthError) return "That date isn't in the current month."
+  if (e instanceof ReadOnlyMonthError) return "This month is archived."
   if (e instanceof WrongGoalTypeError) return "That action isn't valid for this goal type."
   if (e instanceof UndoNotFoundError) return "Nothing to undo."
   if (e instanceof TaskNotFoundError) return "Task not found."

@@ -16,9 +16,9 @@ export class GoalNotFoundError extends Error {
   }
 }
 
-export class OutOfMonthError extends Error {
+export class ReadOnlyMonthError extends Error {
   constructor() {
-    super("That date isn't in the current month.")
+    super("This month is archived.")
   }
 }
 
@@ -57,7 +57,7 @@ export async function incrementCount(userId: string, userTz: string, input: Incr
   return db.transaction(async (tx) => {
     const g = await loadOwnedGoal(tx, userId, input.goalId)
     if (g.type !== "count") throw new WrongGoalTypeError()
-    if (g.month !== currentMonth) throw new OutOfMonthError()
+    if (g.month !== currentMonth) throw new ReadOnlyMonthError()
     await tx.insert(progressEntries).values({
       goalId: input.goalId,
       delta: input.delta,
@@ -77,12 +77,12 @@ export async function backfillCount(userId: string, userTz: string, input: Backf
   const currentMonth = isoDate(currentMonthDate)
   const todayStr = today(now, userTz)
   // loggedLocalDate must be in current month AND strictly before today in userTz
-  if (input.loggedLocalDate.slice(0, 7) !== currentMonth.slice(0, 7)) throw new OutOfMonthError()
-  if (input.loggedLocalDate >= todayStr) throw new OutOfMonthError()
+  if (input.loggedLocalDate.slice(0, 7) !== currentMonth.slice(0, 7)) throw new ReadOnlyMonthError()
+  if (input.loggedLocalDate >= todayStr) throw new ReadOnlyMonthError()
   return db.transaction(async (tx) => {
     const g = await loadOwnedGoal(tx, userId, input.goalId)
     if (g.type !== "count") throw new WrongGoalTypeError()
-    if (g.month !== currentMonth) throw new OutOfMonthError()
+    if (g.month !== currentMonth) throw new ReadOnlyMonthError()
     await tx.insert(progressEntries).values({
       goalId: input.goalId,
       delta: input.delta,
@@ -118,7 +118,7 @@ export async function toggleTask(userId: string, userTz: string, input: ToggleTa
     if (!row) throw new TaskNotFoundError()
     if (row.goalUserId !== userId) throw new GoalNotFoundError()
     if (row.goalType !== "checklist") throw new WrongGoalTypeError()
-    if (row.goalMonth !== currentMonth) throw new OutOfMonthError()
+    if (row.goalMonth !== currentMonth) throw new ReadOnlyMonthError()
 
     await tx
       .update(tasks)
@@ -139,13 +139,13 @@ export async function upsertHabitCheckIn(userId: string, userTz: string, input: 
   const todayStr = today(now, userTz)
 
   // Business rules: no future dates, must be in current month
-  if (input.checkInDate > todayStr) throw new OutOfMonthError()
-  if (input.checkInDate.slice(0, 7) !== currentMonth.slice(0, 7)) throw new OutOfMonthError()
+  if (input.checkInDate > todayStr) throw new ReadOnlyMonthError()
+  if (input.checkInDate.slice(0, 7) !== currentMonth.slice(0, 7)) throw new ReadOnlyMonthError()
 
   return db.transaction(async (tx) => {
     const g = await loadOwnedGoal(tx, userId, input.goalId)
     if (g.type !== "habit") throw new WrongGoalTypeError()
-    if (g.month !== currentMonth) throw new OutOfMonthError()
+    if (g.month !== currentMonth) throw new ReadOnlyMonthError()
 
     // Record prior state for undo (inside same transaction — T-02-33)
     const priorRows = await tx
