@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 3 UI-SPEC approved
-last_updated: "2026-04-21T00:59:59.469Z"
-last_activity: 2026-04-21 -- Phase 3 planning complete
+stopped_at: Completed 03-01-foundations-time-schemas-PLAN.md
+last_updated: "2026-04-27T03:50:27.368Z"
+last_activity: 2026-04-27 -- Phase --phase execution started
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 16
-  completed_plans: 11
-  percent: 69
+  completed_plans: 12
+  percent: 75
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** The visual feedback has to feel good enough that users *want* to open the dashboard — progress bars moving is the draw, everything else supports that.
-**Current focus:** Phase 02 — goals-dashboard-three-types
+**Current focus:** Phase --phase — 03
 
 ## Current Position
 
-Phase: 3
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-04-21 -- Phase 3 planning complete
+Phase: --phase (03) — EXECUTING
+Plan: 1 of --name
+Status: Executing Phase --phase
+Last activity: 2026-04-27 -- Phase --phase execution started
 
-Progress: [██░░░░░░░░] 20%
+Progress: [████████░░] 75%
 
 ## Performance Metrics
 
@@ -68,6 +68,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase 02 P04 | 4min | 2 tasks | 6 files |
 | Phase 02 P05 | 5min | 2 tasks | 5 files |
 | Phase 02 P06 | 5min+UAT | 4 tasks | 9 files |
+| Phase 03 P01 | 4min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -111,6 +112,9 @@ Recent decisions affecting current work:
 - [Phase 02]: D-33 resolution: habit_check_in_undos sibling table chosen because habit_check_ins rows are DELETED on uncheck (composite PK, no row survives); undoLastMutation branches count→tasks→habit sequentially via undoId
 - [Phase 02]: HabitGrid ARIA contract: role=grid on container, role=gridcell on each button, aria-label per cell in format '{MMMM d} — {done|not done|today, done|today, not yet done|future}', aria-pressed mirrors isHit
 - [Phase 02]: Future-date defense in depth: HabitGrid disables future cells UI-side; service layer also asserts checkInDate <= todayStr (T-02-31 mitigation)
+- compareMonth takes two pre-bucketed UTC Date objects — no userTz param to avoid double-applying offset (03-01)
+- upsertReflectionSchema uses .nullable() chaining (not z.union) — z.union loses inner .max() error messages when both branches fail (03-01)
+- Server/client schema split per D-30: server transforms empty→null, client preserves raw strings for char counter (03-01)
 
 ### Pending Todos
 
@@ -131,6 +135,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-04-20T23:55:20.098Z
-Stopped at: Phase 3 UI-SPEC approved
-Resume file: /Users/rathtana.duong/gsd-tutorial/.planning/phases/03-month-navigation-history-reflection/03-UI-SPEC.md
+Last session: 2026-04-27T03:50:27.354Z
+Stopped at: Completed 03-01-foundations-time-schemas-PLAN.md
+Resume file: None

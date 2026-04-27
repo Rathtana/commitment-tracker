@@ -38,7 +38,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Month Navigation & History
 
-- [ ] **MNAV-01**: User can navigate between past, current, and future months via prev/next controls
+- [x] **MNAV-01
+**: User can navigate between past, current, and future months via prev/next controls
 - [ ] **MNAV-02**: Past-month goals are visible but read-only (no goal edits, no progress changes) — enforced in both API and UI
 - [ ] **MNAV-03**: User can copy all goals from the previous month into the current month with one click
 - [ ] **MNAV-04**: On the 1st of a new month the dashboard starts blank unless the user pre-set goals or uses Copy-from-last-month
@@ -48,7 +49,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **POLSH-01**: Dashboard and all core flows are mobile-responsive with touch targets ≥ 44px
 - [ ] **POLSH-02**: Failed saves surface through error toasts or inline errors — user input is never silently dropped
 - [x] **POLSH-03**: Habit goals render a month-grid showing which specific days were hit/missed, alongside the progress bar
-- [ ] **POLSH-04**: Past-month and end-of-month views include an optional two-line reflection field ("what worked / what didn't")
+- [x] **POLSH-04
+**: Past-month and end-of-month views include an optional two-line reflection field ("what worked / what didn't")
 
 ## v2 Requirements
 
