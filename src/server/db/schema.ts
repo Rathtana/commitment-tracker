@@ -10,6 +10,7 @@ import {
   integer,
   boolean,
   primaryKey,
+  unique,
 } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 import { authenticatedRole, authUsers } from "drizzle-orm/supabase"
@@ -230,6 +231,49 @@ export const progressEntries = pgTable(
     pgPolicy("progress-entries-delete-own", {
       for: "delete", to: authenticatedRole,
       using: sql`EXISTS (SELECT 1 FROM public.goals g WHERE g.id = goal_id AND g.user_id = auth.uid())`,
+    }),
+  ],
+)
+
+// ---------- public.month_reflections (POLSH-04 / D-24) ----------
+export const monthReflections = pgTable(
+  "month_reflections",
+  {
+    id: uuid("id").primaryKey().defaultRandom().notNull(),
+    userId: uuid("user_id").notNull(),
+    month: date("month").notNull(), // CHECK enforced via hand-authored migration 0007
+    whatWorked: text("what_worked"), // nullable per D-30
+    whatDidnt: text("what_didnt"),   // nullable per D-30
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.userId],
+      foreignColumns: [users.id],
+      name: "month_reflections_user_id_fk",
+    }).onDelete("cascade"),
+    unique("month_reflections_user_month_key").on(table.userId, table.month),
+    pgPolicy("month-reflections-select-own", {
+      for: "select",
+      to: authenticatedRole,
+      using: sql`user_id = auth.uid()`,
+    }),
+    pgPolicy("month-reflections-insert-own", {
+      for: "insert",
+      to: authenticatedRole,
+      withCheck: sql`user_id = auth.uid()`,
+    }),
+    pgPolicy("month-reflections-update-own", {
+      for: "update",
+      to: authenticatedRole,
+      using: sql`user_id = auth.uid()`,
+      withCheck: sql`user_id = auth.uid()`,
+    }),
+    pgPolicy("month-reflections-delete-own", {
+      for: "delete",
+      to: authenticatedRole,
+      using: sql`user_id = auth.uid()`,
     }),
   ],
 )
