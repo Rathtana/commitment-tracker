@@ -19,6 +19,7 @@ import {
   deleteGoal,
   GoalNotFoundError,
   GoalTypeImmutableError,
+  ReadOnlyMonthError,
 } from "@/server/services/goals"
 
 type ActionResult<T = void> = { ok: true; data: T } | { ok: false; error: string }
@@ -50,11 +51,13 @@ export async function updateGoalAction(input: UpdateGoalInput): Promise<ActionRe
   const supabase = await getSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { ok: false, error: "Not authenticated." }
+  const userTz = await resolveUserTz(user.id)
   try {
-    await updateGoal(user.id, parsed.data)
+    await updateGoal(user.id, userTz, parsed.data)
     revalidatePath("/dashboard")
     return { ok: true, data: undefined }
   } catch (e) {
+    if (e instanceof ReadOnlyMonthError) return { ok: false, error: "This month is archived." }
     if (e instanceof GoalNotFoundError) return { ok: false, error: "Goal not found or not owned by you." }
     if (e instanceof GoalTypeImmutableError) return { ok: false, error: "A goal's type cannot be changed after creation." }
     return { ok: false, error: "Couldn't save that change. Try again." }
@@ -67,11 +70,13 @@ export async function deleteGoalAction(input: DeleteGoalInput): Promise<ActionRe
   const supabase = await getSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { ok: false, error: "Not authenticated." }
+  const userTz = await resolveUserTz(user.id)
   try {
-    await deleteGoal(user.id, parsed.data.goalId)
+    await deleteGoal(user.id, userTz, parsed.data.goalId)
     revalidatePath("/dashboard")
     return { ok: true, data: undefined }
   } catch (e) {
+    if (e instanceof ReadOnlyMonthError) return { ok: false, error: "This month is archived." }
     if (e instanceof GoalNotFoundError) return { ok: false, error: "Goal not found or not owned by you." }
     return { ok: false, error: "Couldn't save that change. Try again." }
   }

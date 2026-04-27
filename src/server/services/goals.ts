@@ -3,6 +3,7 @@ import { db } from "@/server/db"
 import { goals, tasks } from "@/server/db/schema"
 import { monthBucket } from "@/lib/time"
 import type { CreateGoalInput, UpdateGoalInput } from "@/lib/schemas/goals"
+import { ReadOnlyMonthError } from "@/server/services/progress"
 
 export class GoalNotFoundError extends Error {
   constructor() {
@@ -15,6 +16,9 @@ export class GoalTypeImmutableError extends Error {
     super("A goal's type cannot be changed after creation.")
   }
 }
+
+// Re-export for convenience (consumers can import from either place)
+export { ReadOnlyMonthError }
 
 export async function createGoal(userId: string, userTz: string, input: CreateGoalInput) {
   const month = monthBucket(new Date(), userTz)
@@ -46,7 +50,7 @@ export async function createGoal(userId: string, userTz: string, input: CreateGo
   })
 }
 
-export async function updateGoal(userId: string, input: UpdateGoalInput) {
+export async function updateGoal(userId: string, userTz: string, input: UpdateGoalInput) {
   return db.transaction(async (tx) => {
     const existing = await tx
       .select()
@@ -54,6 +58,9 @@ export async function updateGoal(userId: string, input: UpdateGoalInput) {
       .where(and(eq(goals.id, input.goalId), eq(goals.userId, userId)))
       .limit(1)
     if (existing.length === 0) throw new GoalNotFoundError()
+    const currentMonthStr = monthBucket(new Date(), userTz).toISOString().slice(0, 10)
+    if (existing[0].month < currentMonthStr) throw new ReadOnlyMonthError()
+    // future (existing[0].month > currentMonthStr) is ALLOWED per D-09
     if (existing[0].type !== input.type) throw new GoalTypeImmutableError()
 
     if (input.type === "count") {
@@ -79,10 +86,17 @@ export async function updateGoal(userId: string, input: UpdateGoalInput) {
   })
 }
 
-export async function deleteGoal(userId: string, goalId: string) {
-  const result = await db
-    .delete(goals)
-    .where(and(eq(goals.id, goalId), eq(goals.userId, userId)))
-    .returning({ id: goals.id })
-  if (result.length === 0) throw new GoalNotFoundError()
+export async function deleteGoal(userId: string, userTz: string, goalId: string) {
+  return db.transaction(async (tx) => {
+    const [existing] = await tx
+      .select({ month: goals.month })
+      .from(goals)
+      .where(and(eq(goals.id, goalId), eq(goals.userId, userId)))
+      .limit(1)
+    if (!existing) throw new GoalNotFoundError()
+    const currentMonthStr = monthBucket(new Date(), userTz).toISOString().slice(0, 10)
+    if (existing.month < currentMonthStr) throw new ReadOnlyMonthError()
+    // future (existing.month > currentMonthStr) is ALLOWED per D-09
+    await tx.delete(goals).where(and(eq(goals.id, goalId), eq(goals.userId, userId)))
+  })
 }
