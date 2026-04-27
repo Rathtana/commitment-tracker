@@ -20,6 +20,9 @@ import { DashboardShell, NewGoalButton } from "@/components/dashboard-shell"
 import { EmptyState } from "@/components/empty-state"
 import { PastMonthReadOnly } from "@/components/past-month-read-only"
 import { PastEmptyState } from "@/components/past-empty-state"
+import { WelcomeToMonth } from "@/components/welcome-to-month"
+import { ReflectionCard } from "@/components/reflection-card"
+import { getReflectionForMonth } from "@/server/db/queries"
 import { signOutAction } from "@/server/actions/auth"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -63,11 +66,14 @@ export default async function DashboardMonthPage({ params }: PageProps) {
 
   const goals = await getMonthDashboard(user.id, viewedMonth)
 
-  // D-18 precondition (Plan 05 will wire Welcome UI; for now, compute but don't render the card)
   const priorMonthHasGoals =
     status === "past"
       ? false
       : (await countGoalsInMonth(user.id, subMonths(viewedMonth, 1))) > 0
+
+  const reflection = status !== "future"
+    ? await getReflectionForMonth(user.id, viewedMonth)
+    : null
 
   // Header right-cluster: past months have no NewGoal button (D-12 UI layer)
   // Today button: only when viewed != current (D-08)
@@ -105,11 +111,15 @@ export default async function DashboardMonthPage({ params }: PageProps) {
       ) : status === "past" ? (
         <PastMonthReadOnly goals={goals} now={now} userTz={userTz} />
       ) : goals.length === 0 && priorMonthHasGoals ? (
-        // TODO (Plan 05): render <WelcomeToMonth priorMonthLabel={format(subMonths(viewedMonth, 1), 'MMMM')} monthYearLabel={monthYearLabel} />
-        // For now, fall back to Phase 2 EmptyState so the route is usable for MNAV-01/MNAV-02/GOAL-05 verification.
-        <EmptyState
+        <WelcomeToMonth
           monthYearLabel={monthYearLabel}
-          createButtonSlot={<NewGoalButton daysInMonthDefault={daysInMonth} />}
+          priorMonthLabel={format(subMonths(viewedMonth, 1), "MMMM")}
+          fallbackSlot={
+            <EmptyState
+              monthYearLabel={monthYearLabel}
+              createButtonSlot={<NewGoalButton daysInMonthDefault={daysInMonth} />}
+            />
+          }
         />
       ) : goals.length === 0 ? (
         <EmptyState
@@ -127,7 +137,13 @@ export default async function DashboardMonthPage({ params }: PageProps) {
         />
       )}
 
-      {/* TODO (Plan 05): when status !== 'future', render <ReflectionCard month={viewedMonth} initial={reflection} monthYearLabel={monthYearLabel} /> */}
+      {status !== "future" && (
+        <ReflectionCard
+          monthIsoDate={viewedIsoDate}
+          monthYearLabel={monthYearLabel}
+          initial={reflection}
+        />
+      )}
     </>
   )
 }
