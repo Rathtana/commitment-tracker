@@ -21,13 +21,17 @@ interface HabitCardProps {
   goal: HabitGoal
   now: Date
   userTz: string
-  handlers: GoalCardHandlers
+  handlers?: GoalCardHandlers
+  variant?: 'mutable' | 'read-only'
+  progressDisabled?: boolean
+  monthYearLabel?: string
 }
 
-export function HabitCard({ goal, now, userTz, handlers }: HabitCardProps) {
+export function HabitCard({ goal, now, userTz, handlers, variant = 'mutable', progressDisabled = false, monthYearLabel }: HabitCardProps) {
   const snap = computeProgress(goal, now, userTz)
   const title = (goal as { title?: string }).title ?? 'Goal'
   const ariaLabel = `${title}: ${snap.raw.done} of ${snap.raw.total} days this month (${Math.round(snap.percent * 100)}%)`
+  const isReadOnly = variant === 'read-only'
 
   return (
     <Card>
@@ -35,22 +39,24 @@ export function HabitCard({ goal, now, userTz, handlers }: HabitCardProps) {
         <CardTitle className="flex items-center gap-2 text-sm font-semibold">
           <Flame className="h-4 w-4 text-primary" /> {title}
         </CardTitle>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Goal actions">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => handlers.onEdit(goal as Goal)}>Edit</DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-destructive"
-              onClick={() => handlers.onDelete(goal as Goal)}
-            >
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {!isReadOnly && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Goal actions">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handlers?.onEdit(goal as Goal)}>Edit</DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => handlers?.onDelete(goal as Goal)}
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
@@ -60,7 +66,9 @@ export function HabitCard({ goal, now, userTz, handlers }: HabitCardProps) {
             ariaLabel={ariaLabel}
             className="flex-1"
           />
-          <PaceChip pace={snap.pace} paceDelta={snap.paceDelta} />
+          {!isReadOnly && !progressDisabled && (
+            <PaceChip pace={snap.pace} paceDelta={snap.paceDelta} />
+          )}
         </div>
 
         <HabitGrid
@@ -68,7 +76,13 @@ export function HabitCard({ goal, now, userTz, handlers }: HabitCardProps) {
           checkIns={goal.checkIns}
           now={now}
           userTz={userTz}
-          onToggle={(iso, willBeChecked) => handlers.onHabitToggle(goal.id, iso, willBeChecked)}
+          readOnly={isReadOnly || progressDisabled}
+          progressDisabledTitle={progressDisabled && monthYearLabel ? `Available when ${monthYearLabel} starts` : undefined}
+          onToggle={
+            !isReadOnly && !progressDisabled
+              ? (iso, willBeChecked) => handlers?.onHabitToggle(goal.id, iso, willBeChecked)
+              : undefined
+          }
         />
 
         <p className="text-right text-xs tabular-nums text-muted-foreground">

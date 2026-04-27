@@ -23,13 +23,17 @@ interface ChecklistCardProps {
   goal: ChecklistGoal
   now: Date
   userTz: string
-  handlers: GoalCardHandlers
+  handlers?: GoalCardHandlers
+  variant?: 'mutable' | 'read-only'
+  progressDisabled?: boolean
+  monthYearLabel?: string
 }
 
-export function ChecklistCard({ goal, now, userTz, handlers }: ChecklistCardProps) {
+export function ChecklistCard({ goal, now, userTz, handlers, variant = 'mutable', progressDisabled = false, monthYearLabel: _monthYearLabel }: ChecklistCardProps) {
   const snap = computeProgress(goal, now, userTz)
   const title = (goal as { title?: string }).title ?? 'Goal'
   const ariaLabel = `${title}: ${snap.raw.done} of ${snap.raw.total} done (${Math.round(snap.percent * 100)}%)`
+  const isReadOnly = variant === 'read-only'
 
   return (
     <Card>
@@ -37,27 +41,31 @@ export function ChecklistCard({ goal, now, userTz, handlers }: ChecklistCardProp
         <CardTitle className="flex items-center gap-2 text-sm font-semibold">
           <ListChecks className="h-4 w-4 text-primary" /> {title}
         </CardTitle>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Goal actions">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => handlers.onEdit(goal as Goal)}>Edit</DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-destructive"
-              onClick={() => handlers.onDelete(goal as Goal)}
-            >
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {!isReadOnly && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Goal actions">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handlers?.onEdit(goal as Goal)}>Edit</DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => handlers?.onDelete(goal as Goal)}
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
           <ProgressBar percent={snap.percent} ariaLabel={ariaLabel} className="flex-1" />
-          <PaceChip pace={snap.pace} paceDelta={snap.paceDelta} suppressForChecklist />
+          {!isReadOnly && !progressDisabled && (
+            <PaceChip pace={snap.pace} paceDelta={snap.paceDelta} suppressForChecklist />
+          )}
         </div>
 
         {goal.tasks.length === 0 ? (
@@ -68,20 +76,31 @@ export function ChecklistCard({ goal, now, userTz, handlers }: ChecklistCardProp
               const taskId = t.id ?? ''
               const taskLabel = (t as { label?: string }).label ?? ''
               return (
-                <li key={taskId || taskLabel} className="flex min-h-11 items-center gap-3 py-2">
+                <li
+                  key={taskId || taskLabel}
+                  className={cn(
+                    'flex min-h-11 items-center gap-3 py-2',
+                    isReadOnly && 'cursor-default pointer-events-none',
+                  )}
+                >
                   <Checkbox
                     id={`task-${taskId}`}
                     checked={t.isDone}
-                    onCheckedChange={(v) =>
-                      taskId &&
-                      handlers.onChecklistToggle(goal.id, taskId, Boolean(v), taskLabel)
+                    disabled={isReadOnly || progressDisabled}
+                    onCheckedChange={
+                      !isReadOnly && !progressDisabled
+                        ? (v) =>
+                            taskId &&
+                            handlers?.onChecklistToggle(goal.id, taskId, Boolean(v), taskLabel)
+                        : undefined
                     }
                     aria-label={taskLabel || undefined}
                   />
                   <Label
                     htmlFor={`task-${taskId}`}
                     className={cn(
-                      'flex-1 cursor-pointer text-sm',
+                      'flex-1 text-sm',
+                      !isReadOnly && !progressDisabled && 'cursor-pointer',
                       t.isDone && 'font-normal text-muted-foreground line-through',
                     )}
                   >

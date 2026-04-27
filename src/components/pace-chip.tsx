@@ -22,10 +22,14 @@ interface PaceChipProps {
   paceDelta: number
   // When true (for checklist goals), chip is suppressed entirely — D-12.
   suppressForChecklist?: boolean
+  // When true (read-only or future-month context), chip is hidden — UI-SPEC line 401.
+  hidden?: boolean
   className?: string
 }
 
-export function PaceChip({ pace, paceDelta, suppressForChecklist, className }: PaceChipProps) {
+export function PaceChip({ pace, paceDelta, suppressForChecklist, hidden, className }: PaceChipProps) {
+  // Suppress when explicitly hidden (past-month read-only or future-month progressDisabled)
+  if (hidden) return null
   // D-13 early-month guard: warming-up hides the chip
   if (pace === 'warming-up') return null
   // D-12: checklist has no time axis — suppress rather than show a meaningless "on pace"

@@ -10,10 +10,14 @@ interface HabitGridProps {
   checkIns: string[]   // ISO 'YYYY-MM-DD'
   now: Date
   userTz: string
-  onToggle: (localDate: string, willBeChecked: boolean) => void
+  onToggle?: (localDate: string, willBeChecked: boolean) => void
+  /** When true: no click handlers, no "today" ring, cells render as static. Past-month read-only. */
+  readOnly?: boolean
+  /** Tooltip text shown on disabled cells in future-month progressDisabled context */
+  progressDisabledTitle?: string
 }
 
-export function HabitGrid({ month, checkIns, now, userTz, onToggle }: HabitGridProps) {
+export function HabitGrid({ month, checkIns, now, userTz, onToggle, readOnly = false, progressDisabledTitle }: HabitGridProps) {
   const start = startOfMonth(month)
   const end = endOfMonth(month)
   const days = eachDayOfInterval({ start, end })
@@ -25,9 +29,9 @@ export function HabitGrid({ month, checkIns, now, userTz, onToggle }: HabitGridP
   const todayStr = format(localNow, 'yyyy-MM-dd')
   const checkSet = React.useMemo(() => new Set(checkIns), [checkIns])
 
-  // Roving tabindex: first enabled cell gets tabIndex=0 initially
+  // Roving tabindex: first enabled cell gets tabIndex=0 initially (only when interactive)
   const [focusedIso, setFocusedIso] = React.useState<string | null>(null)
-  const firstEnabled = days.find((d) => format(d, 'yyyy-MM-dd') <= todayStr)
+  const firstEnabled = !readOnly ? days.find((d) => format(d, 'yyyy-MM-dd') <= todayStr) : null
   const defaultFocusIso = firstEnabled ? format(firstEnabled, 'yyyy-MM-dd') : null
   const activeIso = focusedIso ?? defaultFocusIso
 
@@ -39,6 +43,7 @@ export function HabitGrid({ month, checkIns, now, userTz, onToggle }: HabitGridP
   }
 
   function onCellKeyDown(e: React.KeyboardEvent, iso: string, isFuture: boolean) {
+    if (readOnly) return
     const idx = days.findIndex((d) => format(d, 'yyyy-MM-dd') === iso)
     if (idx === -1) return
     const move = (delta: number) => {
@@ -55,7 +60,7 @@ export function HabitGrid({ month, checkIns, now, userTz, onToggle }: HabitGridP
     else if (e.key === 'ArrowUp') { e.preventDefault(); move(-7) }
     else if ((e.key === 'Enter' || e.key === ' ') && !isFuture) {
       e.preventDefault()
-      onToggle(iso, !checkSet.has(iso))
+      onToggle?.(iso, !checkSet.has(iso))
     }
   }
 
@@ -69,29 +74,37 @@ export function HabitGrid({ month, checkIns, now, userTz, onToggle }: HabitGridP
         {days.map((d) => {
           const iso = format(d, 'yyyy-MM-dd')
           const isHit = checkSet.has(iso)
-          const isToday = iso === todayStr
-          const isFuture = iso > todayStr
+          // In read-only (past month): no concept of "today" or "future"
+          const isToday = !readOnly && iso === todayStr
+          const isFuture = !readOnly && iso > todayStr
           const label = ariaLabelFor(iso, isHit, isToday, isFuture)
+          const cellTitle = progressDisabledTitle && !readOnly ? progressDisabledTitle : undefined
+
           return (
             <button
               key={iso}
               type="button"
               role="gridcell"
-              disabled={isFuture}
-              tabIndex={iso === activeIso ? 0 : -1}
-              onFocus={() => setFocusedIso(iso)}
-              onClick={() => !isFuture && onToggle(iso, !isHit)}
+              disabled={readOnly || isFuture}
+              tabIndex={readOnly ? -1 : (iso === activeIso ? 0 : -1)}
+              onFocus={readOnly ? undefined : () => setFocusedIso(iso)}
+              onClick={readOnly || isFuture ? undefined : () => onToggle?.(iso, !isHit)}
               onKeyDown={(e) => onCellKeyDown(e, iso, isFuture)}
               aria-label={label}
               aria-pressed={isHit}
+              title={cellTitle}
               className={cn(
                 'flex h-9 w-9 items-center justify-center rounded-md text-xs tabular-nums',
+                // Hit cells: bg-primary (emerald) — NEVER red/destructive (PITFALLS §1 + UI-SPEC #6/#7)
                 isHit && !isToday && 'bg-primary text-primary-foreground',
+                // Miss cells: bg-muted (UNCHANGED — never red)
                 !isHit && !isToday && !isFuture && 'bg-muted text-muted-foreground',
+                // Today ring variants (only in interactive/non-readOnly)
                 isToday && isHit && 'bg-primary text-primary-foreground ring-2 ring-ring ring-offset-2 ring-offset-card',
                 isToday && !isHit && 'bg-muted text-foreground ring-2 ring-ring ring-offset-2 ring-offset-card',
                 isFuture && 'bg-muted text-muted-foreground opacity-50 cursor-not-allowed',
-                !isFuture && 'hover:bg-muted/80',
+                readOnly && 'cursor-default',
+                !readOnly && !isFuture && 'hover:bg-muted/80',
               )}
             >
               {format(d, 'd')}
