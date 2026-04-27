@@ -82,9 +82,16 @@ interface DashboardShellProps {
   userTz: string
   nowIso: string
   daysInMonthDefault: number
+  /**
+   * 'current' — all progress affordances live (Phase 2 behavior)
+   * 'future'  — kebab/CRUD rendered (D-09), but stepper/+1/checkbox/habit-cell disabled (D-11)
+   */
+  monthContext: 'current' | 'future'
+  /** Month label for future-month disabled tooltip — e.g. 'May 2026' */
+  monthYearLabel?: string
 }
 
-export function DashboardShell({ initialGoals, userTz, nowIso, daysInMonthDefault }: DashboardShellProps) {
+export function DashboardShell({ initialGoals, userTz, nowIso, daysInMonthDefault, monthContext, monthYearLabel }: DashboardShellProps) {
   const [goals, dispatch] = useOptimistic(initialGoals, dashboardReducer)
   const [isPending, startTransition] = useTransition()
   const now = new Date(nowIso)
@@ -247,7 +254,15 @@ export function DashboardShell({ initialGoals, userTz, nowIso, daysInMonthDefaul
     <>
       <section className="flex flex-col gap-4" aria-label="Your goals">
         {goals.map((goal) => (
-          <GoalCard key={goal.id} goal={goal} now={now} userTz={userTz} handlers={handlers} />
+          <GoalCard
+            key={goal.id}
+            goal={goal}
+            now={now}
+            userTz={userTz}
+            handlers={handlers}
+            progressDisabled={monthContext === 'future'}
+            monthYearLabel={monthYearLabel}
+          />
         ))}
       </section>
 
