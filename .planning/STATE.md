@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-01-foundations-time-schemas-PLAN.md
-last_updated: "2026-04-27T03:50:27.368Z"
+stopped_at: Completed 03-02-readonly-month-enforcement-PLAN.md
+last_updated: "2026-04-27T03:58:35.733Z"
 last_activity: 2026-04-27 -- Phase --phase execution started
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 16
-  completed_plans: 12
-  percent: 75
+  completed_plans: 13
+  percent: 81
 ---
 
 # Project State
@@ -30,7 +30,7 @@ Plan: 1 of --name
 Status: Executing Phase --phase
 Last activity: 2026-04-27 -- Phase --phase execution started
 
-Progress: [████████░░] 75%
+Progress: [████████░░] 81%
 
 ## Performance Metrics
 
@@ -69,6 +69,7 @@ Progress: [████████░░] 75%
 | Phase 02 P05 | 5min | 2 tasks | 5 files |
 | Phase 02 P06 | 5min+UAT | 4 tasks | 9 files |
 | Phase 03 P01 | 4min | 2 tasks | 7 files |
+| Phase 03-month-navigation-history-reflection P02 | 5 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -115,6 +116,7 @@ Recent decisions affecting current work:
 - compareMonth takes two pre-bucketed UTC Date objects — no userTz param to avoid double-applying offset (03-01)
 - upsertReflectionSchema uses .nullable() chaining (not z.union) — z.union loses inner .max() error messages when both branches fail (03-01)
 - Server/client schema split per D-30: server transforms empty→null, client preserves raw strings for char counter (03-01)
+- ReadOnlyMonthError single-source-of-truth: class in progress.ts, re-exported from goals.ts; past-month guard uses lexical ISO date comparison; deleteGoal refactored to load-then-check transaction; resolveUserTz server-side only (T-03-03 mitigation)
 
 ### Pending Todos
 
@@ -135,6 +137,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-04-27T03:50:27.354Z
-Stopped at: Completed 03-01-foundations-time-schemas-PLAN.md
+Last session: 2026-04-27T03:58:35.725Z
+Stopped at: Completed 03-02-readonly-month-enforcement-PLAN.md
 Resume file: None

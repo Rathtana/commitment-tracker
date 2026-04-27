@@ -21,7 +21,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **GOAL-02**: User can edit a goal that belongs to the current or a future month
 - [x] **GOAL-03**: User can delete a goal with a confirmation step
 - [x] **GOAL-04**: Every goal is scoped to a specific month (stored as a DATE pinned to the first of that month)
-- [ ] **GOAL-05**: User can pre-set goals for future months by navigating forward before the month begins
+- [x] **GOAL-05
+**: User can pre-set goals for future months by navigating forward before the month begins
 
 ### Progress Logging
 
@@ -40,7 +41,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **MNAV-01
 **: User can navigate between past, current, and future months via prev/next controls
-- [ ] **MNAV-02**: Past-month goals are visible but read-only (no goal edits, no progress changes) — enforced in both API and UI
+- [x] **MNAV-02
+**: Past-month goals are visible but read-only (no goal edits, no progress changes) — enforced in both API and UI
 - [ ] **MNAV-03**: User can copy all goals from the previous month into the current month with one click
 - [ ] **MNAV-04**: On the 1st of a new month the dashboard starts blank unless the user pre-set goals or uses Copy-from-last-month
 
