@@ -1,6 +1,6 @@
 import { eq, and, asc, sql } from "drizzle-orm"
 import { db } from "@/server/db"
-import { goals, tasks, habitCheckIns } from "@/server/db/schema"
+import { goals, tasks, habitCheckIns, monthReflections } from "@/server/db/schema"
 import type { Goal } from "@/lib/progress"
 
 /**
@@ -75,4 +75,37 @@ export async function getMonthDashboard(
         }
     }
   }) as Goal[]
+}
+
+/**
+ * Count goals for (user, month). Used by Plan 04/05 Welcome trigger:
+ * priorMonthHasGoals = count > 0.
+ * Phase 3 D-18 precondition helper.
+ */
+export async function countGoalsInMonth(userId: string, month: Date): Promise<number> {
+  const monthStr = month.toISOString().slice(0, 10)
+  const rows = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(goals)
+    .where(and(eq(goals.userId, userId), eq(goals.month, monthStr)))
+  return rows[0]?.count ?? 0
+}
+
+/**
+ * Fetch the reflection row for (user, month). Returns null when no row exists (D-30).
+ */
+export async function getReflectionForMonth(
+  userId: string,
+  month: Date,
+): Promise<{ whatWorked: string | null; whatDidnt: string | null } | null> {
+  const monthStr = month.toISOString().slice(0, 10)
+  const [row] = await db
+    .select({
+      whatWorked: monthReflections.whatWorked,
+      whatDidnt: monthReflections.whatDidnt,
+    })
+    .from(monthReflections)
+    .where(and(eq(monthReflections.userId, userId), eq(monthReflections.month, monthStr)))
+    .limit(1)
+  return row ?? null
 }

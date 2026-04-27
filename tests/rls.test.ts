@@ -411,6 +411,54 @@ describe('progress_entries RLS', () => {
   })
 })
 
+// ---------------------------------------------------------------------------
+// Phase 3 Plan 03: month_reflections RLS smoke test (T-03-08 / Test 12)
+// ---------------------------------------------------------------------------
+
+describe('month_reflections RLS', () => {
+  let reflectionId: string
+
+  beforeEach(async () => {
+    await sql`DELETE FROM public.month_reflections WHERE user_id IN (${USER_A}, ${USER_B})`
+    reflectionId = randomUUID()
+    // Seed a reflection row for USER_A as postgres superuser (bypassing RLS)
+    await sql`
+      INSERT INTO public.month_reflections (id, user_id, month, what_worked, what_didnt)
+      VALUES (${reflectionId}, ${USER_A}, '2026-04-01', 'great month', 'fell behind')
+    `
+  })
+
+  it("USER_B SELECT month_reflections → 0 rows (A's reflection hidden by RLS)", async () => {
+    const rows = await asUser(USER_B, (tx) =>
+      tx`SELECT id FROM public.month_reflections WHERE id = ${reflectionId}`,
+    )
+    expect(rows).toHaveLength(0)
+  })
+
+  it('USER_A SELECT month_reflections → sees own row', async () => {
+    const rows = await asUser(USER_A, (tx) =>
+      tx`SELECT id FROM public.month_reflections WHERE id = ${reflectionId}`,
+    )
+    expect(rows).toHaveLength(1)
+  })
+
+  it("USER_B INSERT month_reflections with user_id = A → rejected by WITH CHECK", async () => {
+    await expect(
+      asUser(USER_B, (tx) => tx`
+        INSERT INTO public.month_reflections (id, user_id, month, what_worked)
+        VALUES (${randomUUID()}, ${USER_A}, '2026-03-01', 'stolen')
+      `),
+    ).rejects.toThrow(/row-level security/i)
+  })
+
+  it('USER_B UPDATE A reflection → 0 rows affected', async () => {
+    const result = await asUser(USER_B, (tx) =>
+      tx`UPDATE public.month_reflections SET what_worked = 'hacked' WHERE id = ${reflectionId}`,
+    )
+    expect(result.count).toBe(0)
+  })
+})
+
 describe('goals polymorphic CHECK', () => {
   it('rejects (type=count, target_count=NULL)', async () => {
     await expect(
