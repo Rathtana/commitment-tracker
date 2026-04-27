@@ -17,6 +17,7 @@ import {
   createGoal,
   updateGoal,
   deleteGoal,
+  copyGoalsFromLastMonth,
   GoalNotFoundError,
   GoalTypeImmutableError,
   ReadOnlyMonthError,
@@ -79,5 +80,21 @@ export async function deleteGoalAction(input: DeleteGoalInput): Promise<ActionRe
     if (e instanceof ReadOnlyMonthError) return { ok: false, error: "This month is archived." }
     if (e instanceof GoalNotFoundError) return { ok: false, error: "Goal not found or not owned by you." }
     return { ok: false, error: "Couldn't save that change. Try again." }
+  }
+}
+
+export async function copyGoalsFromLastMonthAction(): Promise<
+  ActionResult<{ copiedCount: number; alreadyHadGoals: boolean }>
+> {
+  const supabase = await getSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false, error: "Not authenticated." }
+  const userTz = await resolveUserTz(user.id)
+  try {
+    const result = await copyGoalsFromLastMonth(user.id, userTz)
+    revalidatePath("/dashboard", "layout")
+    return { ok: true, data: result }
+  } catch {
+    return { ok: false, error: "Couldn't copy last month's goals. Please try again." }
   }
 }

@@ -1,4 +1,5 @@
-import { eq, and } from "drizzle-orm"
+import { eq, and, sql } from "drizzle-orm"
+import { subMonths, getDaysInMonth } from "date-fns"
 import { db } from "@/server/db"
 import { goals, tasks } from "@/server/db/schema"
 import { monthBucket } from "@/lib/time"
@@ -98,5 +99,87 @@ export async function deleteGoal(userId: string, userTz: string, goalId: string)
     if (existing.month < currentMonthStr) throw new ReadOnlyMonthError()
     // future (existing.month > currentMonthStr) is ALLOWED per D-09
     await tx.delete(goals).where(and(eq(goals.id, goalId), eq(goals.userId, userId)))
+  })
+}
+
+// D-21: Copy goals from prior month into target month (server-derived).
+// Shells only: count currentCount=0, checklist tasks.isDone=false,
+// habit_check_ins NOT copied, progress_entries NOT copied.
+// D-22: Clamp target_days to getDaysInMonth(toMonth) when source > destination days.
+// D-23: Idempotent — abort if target month already has goals.
+export async function copyGoalsFromLastMonth(
+  userId: string,
+  userTz: string,
+): Promise<{ copiedCount: number; alreadyHadGoals: boolean }> {
+  const now = new Date()
+  const toMonth = monthBucket(now, userTz)
+  const fromMonth = subMonths(toMonth, 1)
+  const toMonthStr = toMonth.toISOString().slice(0, 10)
+  const fromMonthStr = fromMonth.toISOString().slice(0, 10)
+  const daysInToMonth = getDaysInMonth(toMonth)
+
+  return db.transaction(async (tx) => {
+    // D-23 idempotency guard inside the transaction
+    const existing = await tx
+      .select({ count: sql<number>`count(*)::int` })
+      .from(goals)
+      .where(and(eq(goals.userId, userId), eq(goals.month, toMonthStr)))
+    if ((existing[0]?.count ?? 0) > 0) {
+      return { copiedCount: 0, alreadyHadGoals: true }
+    }
+
+    const sources = await tx
+      .select()
+      .from(goals)
+      .where(and(eq(goals.userId, userId), eq(goals.month, fromMonthStr)))
+      .orderBy(goals.position, goals.createdAt)
+
+    if (sources.length === 0) {
+      return { copiedCount: 0, alreadyHadGoals: false }
+    }
+
+    let copied = 0
+    for (const src of sources) {
+      const clampedTargetDays =
+        src.type === "habit" && src.targetDays != null && src.targetDays > daysInToMonth
+          ? daysInToMonth
+          : src.targetDays
+
+      const [newGoal] = await tx
+        .insert(goals)
+        .values({
+          userId,
+          month: toMonthStr,
+          title: src.title,
+          type: src.type,
+          position: src.position,
+          targetCount: src.type === "count" ? src.targetCount : null,
+          currentCount: src.type === "count" ? 0 : null,
+          targetDays: src.type === "habit" ? clampedTargetDays : null,
+        })
+        .returning()
+
+      if (src.type === "checklist") {
+        const sourceTasks = await tx
+          .select()
+          .from(tasks)
+          .where(eq(tasks.goalId, src.id))
+          .orderBy(tasks.position, tasks.createdAt)
+        if (sourceTasks.length > 0) {
+          await tx.insert(tasks).values(
+            sourceTasks.map((t) => ({
+              goalId: newGoal.id,
+              label: t.label,
+              position: t.position,
+              isDone: false,
+              doneAt: null,
+            })),
+          )
+        }
+      }
+      // habit_check_ins + progress_entries INTENTIONALLY not copied (D-21)
+      copied++
+    }
+    return { copiedCount: copied, alreadyHadGoals: false }
   })
 }
