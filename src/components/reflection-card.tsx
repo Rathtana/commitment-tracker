@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PenLine } from 'lucide-react'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { toast } from 'sonner'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -40,7 +40,6 @@ export function ReflectionCard({ monthIsoDate, monthYearLabel, initial }: Props)
   const { register, watch } = form
   const [isPending, startTransition] = useTransition()
   const [savedAt, setSavedAt] = useState<number | null>(null)
-  const [saveError, setSaveError] = useState<string | null>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   // Track the values as loaded from the server so we only autosave on actual user edits.
   // This also prevents React Strict Mode's double-invocation from triggering a spurious save.
@@ -66,12 +65,11 @@ export function ReflectionCard({ monthIsoDate, monthYearLabel, initial }: Props)
       if (result.ok) {
         const stamp = Date.now()
         setSavedAt(stamp)
-        setSaveError(null)
         setTimeout(() => {
           setSavedAt((current) => (current === stamp ? null : current))
         }, 3000)
       } else {
-        setSaveError(result.error)
+        toast.error('Reflection not saved — check your connection')
       }
     })
   }
@@ -139,12 +137,6 @@ export function ReflectionCard({ monthIsoDate, monthYearLabel, initial }: Props)
             </span>
           </div>
         </div>
-
-        {saveError && (
-          <Alert variant="destructive" role="alert">
-            <AlertDescription>{saveError}</AlertDescription>
-          </Alert>
-        )}
 
         <div className="h-5 flex items-center justify-end">
           <span
