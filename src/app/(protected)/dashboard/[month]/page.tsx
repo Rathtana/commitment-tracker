@@ -27,6 +27,7 @@ import { getReflectionForMonth } from "@/server/db/queries"
 import { signOutAction } from "@/server/actions/auth"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { CalendarCheck, LogOut } from "lucide-react"
 
 interface PageProps {
   params: Promise<{ month: string }>
@@ -87,15 +88,33 @@ export default async function DashboardMonthPage({ params }: PageProps) {
   const rightCluster = (
     <>
       {!isCurrent && (
-        <Button variant="outline" size="sm" asChild>
-          <Link href={`/dashboard/${currentSegment}`} aria-label="Return to this month">Today</Link>
+        <Button
+          variant="outline"
+          size="icon"
+          aria-label="Return to this month"
+          title="Return to this month"
+          asChild
+        >
+          <Link href={`/dashboard/${currentSegment}`}>
+            <CalendarCheck className="size-4" />
+            <span className="hidden md:inline">Today</span>
+          </Link>
         </Button>
       )}
       {status !== "past" && goals.length > 0 && (
         <NewGoalButton daysInMonthDefault={daysInMonth} />
       )}
       <form action={signOutAction}>
-        <Button type="submit" variant="outline" size="sm">Log out</Button>
+        <Button
+          type="submit"
+          variant="outline"
+          size="icon"
+          aria-label="Log out"
+          title="Log out"
+        >
+          <LogOut className="size-4" />
+          <span className="hidden md:inline">Log out</span>
+        </Button>
       </form>
     </>
   )
