@@ -553,17 +553,19 @@ The following items are human-action checkpoints, not automatable code tasks:
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **NewGoalButton responsive treatment**
    - What we know: `NewGoalButton` is imported from `dashboard-shell.tsx` and rendered in the rightCluster; D-01 mandates icon-only on mobile for all right cluster buttons
    - What's unclear: Whether NewGoalButton currently renders icon+label or icon-only; whether it accepts a `showLabel` prop
    - Recommendation: Planner reads `dashboard-shell.tsx` NewGoalButton definition and plans the responsive prop or external wrapper accordingly
+   - **RESOLVED:** Plan 04-02 Task 2 wraps the existing `{label}` in `<span className="hidden md:inline">` inside `dashboard-shell.tsx` NewGoalButton and removes the `mr-2` margin from the Plus icon. No new prop needed — inline wrapper approach.
 
 2. **Vercel project already exists vs. first deploy**
    - What we know: No `.vercel` directory exists in the repo root — the project has NOT been linked to Vercel via CLI
    - What's unclear: Whether the user has an existing Vercel project for this app or needs to create one
    - Recommendation: The UAT plan should include a step to either (a) run `vercel link` to connect to an existing project, or (b) run `vercel` to create a new project. This is a one-time human action.
+   - **RESOLVED:** Plan 04-04 Task 2 (human checkpoint) covers both paths — Option A (GitHub integration, push to main auto-deploys) and Option B (`npx vercel` CLI first-time setup). User selects path at execution time.
 
 ---
 
