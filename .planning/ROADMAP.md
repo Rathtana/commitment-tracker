@@ -12,9 +12,9 @@ Commitment Tracker ships in four phases that move from load-bearing infrastructu
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundations & Auth** - Next.js + Supabase + Drizzle scaffold; email/password auth with reset; polymorphic schema with month-pinned DATE invariant; timezone strategy locked
+- [x] **Phase 1: Foundations & Auth** - Next.js + Supabase + Drizzle scaffold; email/password auth with reset; polymorphic schema with month-pinned DATE invariant; timezone strategy locked (completed 2026-04-17)
 - [x] **Phase 2: Goals & Dashboard (Three Types)** - All three goal types creatable, editable, deletable; one-click progress logging; dashboard with pace-aware progress bars and habit month-grid (completed 2026-04-19)
-- [ ] **Phase 3: Month Navigation, History & Reflection** - URL-routed months; past read-only enforcement; future pre-planning; copy-from-last-month rollover; optional end-of-month reflection
+- [x] **Phase 3: Month Navigation, History & Reflection** - URL-routed months; past read-only enforcement; future pre-planning; copy-from-last-month rollover; optional end-of-month reflection (completed 2026-04-27)
 - [ ] **Phase 4: Launch Polish** - Mobile-responsive final pass at 375px; error toasts that never silently drop input; production deploy with verified cookie flags
 
 ## Phase Details
@@ -67,11 +67,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. On the 1st of a new month the dashboard starts blank unless the user pre-set goals, and a visible "Welcome to [Month]" prompt offers Copy-from-last-month or Start-fresh in one click
   5. Past-month and end-of-month views show an optional two-line reflection field ("what worked / what didn't") that the user can save and revisit
 **Plans**: 5 plans
-- [ ] 03-01-PLAN.md — Wave 0 foundation: `compareMonth`/`formatMonthSegment`/`parseMonthSegment` time helpers + `monthSegmentSchema` + `reflectionSchema` + Vitest fixture coverage
-- [ ] 03-02-PLAN.md — Wave 1 service: rename `OutOfMonthError` → `ReadOnlyMonthError`, extend `updateGoal`/`deleteGoal` with past-blocked-future-allowed guard + service-level enforcement test
-- [ ] 03-03-PLAN.md — Wave 1 schema: `month_reflections` Drizzle table + 2 migrations + [BLOCKING] supabase db push + upsertReflection service/action + countGoalsInMonth + getReflectionForMonth
-- [ ] 03-04-PLAN.md — Wave 2 route: `/dashboard` → redirect + `/dashboard/[month]` dynamic RSC + MonthNavigator (keyboard shortcuts) + PastMonthReadOnly + PastEmptyState + GoalCard variant refactor
-- [ ] 03-05-PLAN.md — Wave 3 UI: shadcn Textarea + `copyGoalsFromLastMonth` service/action + WelcomeToMonth + ReflectionCard + route wiring + full-phase UAT
+- [x] 03-01-PLAN.md — Wave 0 foundation: `compareMonth`/`formatMonthSegment`/`parseMonthSegment` time helpers + `monthSegmentSchema` + `reflectionSchema` + Vitest fixture coverage
+- [x] 03-02-PLAN.md — Wave 1 service: rename `OutOfMonthError` → `ReadOnlyMonthError`, extend `updateGoal`/`deleteGoal` with past-blocked-future-allowed guard + service-level enforcement test
+- [x] 03-03-PLAN.md — Wave 1 schema: `month_reflections` Drizzle table + 2 migrations + [BLOCKING] supabase db push + upsertReflection service/action + countGoalsInMonth + getReflectionForMonth
+- [x] 03-04-PLAN.md — Wave 2 route: `/dashboard` → redirect + `/dashboard/[month]` dynamic RSC + MonthNavigator (keyboard shortcuts) + PastMonthReadOnly + PastEmptyState + GoalCard variant refactor
+- [x] 03-05-PLAN.md — Wave 3 UI: shadcn Textarea + `copyGoalsFromLastMonth` service/action + WelcomeToMonth + ReflectionCard + route wiring + full-phase UAT
 **UI hint**: yes
 
 ### Phase 4: Launch Polish
@@ -92,9 +92,9 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundations & Auth | 1/5 | In progress | - |
-| 2. Goals & Dashboard (Three Types) | 6/6 | Complete   | 2026-04-19 |
-| 3. Month Navigation, History & Reflection | 0/TBD | Not started | - |
+| 1. Foundations & Auth | 5/5 | Complete | 2026-04-17 |
+| 2. Goals & Dashboard (Three Types) | 6/6 | Complete | 2026-04-19 |
+| 3. Month Navigation, History & Reflection | 5/5 | Complete | 2026-04-27 |
 | 4. Launch Polish | 0/TBD | Not started | - |
 
 ---
