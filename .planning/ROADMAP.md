@@ -84,7 +84,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Production deploy passes the "looks done but isn't" checklist: Secure + HttpOnly + SameSite=Lax cookies verified on the deployed domain, Lighthouse CLS < 0.1, password reset rate-limited
 **Plans**: 4 plans
 Plans:
-- [ ] 04-01-PLAN.md — Wave 0: Playwright phase4-smoke.spec.ts stub (375px viewport, touch target assertions, autosave error toast intercept)
+- [x] 04-01-PLAN.md — Wave 0: Playwright phase4-smoke.spec.ts stub (375px viewport, touch target assertions, autosave error toast intercept)
 - [ ] 04-02-PLAN.md — Wave 1: MonthNavigator right cluster responsive icon+label (CalendarCheck Today, LogOut, NewGoalButton hidden md:inline label)
 - [ ] 04-03-PLAN.md — Wave 1: HabitGrid h-11 w-11 touch targets + CountCard stepper h-11 w-11 + ReflectionCard toast.error migration
 - [ ] 04-04-PLAN.md — Wave 2: Full Playwright suite + D-06 auth form audit + Vercel production deploy + UAT checklist (autonomous: false)
