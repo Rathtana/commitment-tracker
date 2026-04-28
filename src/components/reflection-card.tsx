@@ -42,7 +42,12 @@ export function ReflectionCard({ monthIsoDate, monthYearLabel, initial }: Props)
   const [savedAt, setSavedAt] = useState<number | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const isMountedRef = useRef(false)
+  // Track the values as loaded from the server so we only autosave on actual user edits.
+  // This also prevents React Strict Mode's double-invocation from triggering a spurious save.
+  const serverValuesRef = useRef({
+    ww: initial?.whatWorked ?? '',
+    wd: initial?.whatDidnt ?? '',
+  })
 
   const ww = watch('whatWorked')
   const wd = watch('whatDidnt')
@@ -64,19 +69,18 @@ export function ReflectionCard({ monthIsoDate, monthYearLabel, initial }: Props)
         setSaveError(null)
         setTimeout(() => {
           setSavedAt((current) => (current === stamp ? null : current))
-        }, 1500)
+        }, 3000)
       } else {
         setSaveError(result.error)
       }
     })
   }
 
-  // Debounced autosave — skip initial mount to avoid harmless empty-null UPSERT on page load.
+  // Debounced autosave — only fires when values differ from what was loaded from the server.
   useEffect(() => {
-    if (!isMountedRef.current) {
-      isMountedRef.current = true
-      return
-    }
+    const unchanged =
+      ww === serverValuesRef.current.ww && wd === serverValuesRef.current.wd
+    if (unchanged) return
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
     timeoutRef.current = setTimeout(() => save(), DEBOUNCE_MS)
     return () => {
@@ -146,7 +150,7 @@ export function ReflectionCard({ monthIsoDate, monthYearLabel, initial }: Props)
           <span
             aria-live="polite"
             className={cn(
-              'text-sm font-semibold text-success-foreground motion-safe:transition-opacity motion-safe:duration-1000',
+              'text-sm font-semibold text-success-foreground motion-safe:transition-opacity motion-safe:duration-300',
               savedAt ? 'opacity-100' : 'opacity-0',
             )}
           >

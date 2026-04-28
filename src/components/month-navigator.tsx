@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { addMonths, subMonths } from 'date-fns'
+import { TZDate } from '@date-fns/tz'
 import { Button } from '@/components/ui/button'
 import { formatMonthSegment } from '@/lib/time'
 
@@ -24,9 +25,10 @@ export function MonthNavigator({
   rightCluster,
 }: Props) {
   const router = useRouter()
-  const viewed = new Date(viewedMonthIso)
-  const prevHref = `/dashboard/${formatMonthSegment(subMonths(viewed, 1))}`
-  const nextHref = `/dashboard/${formatMonthSegment(addMonths(viewed, 1))}`
+  // Pin to UTC so addMonths/subMonths don't apply local-timezone offset to a UTC-midnight date.
+  const utcViewed = new TZDate(viewedMonthIso + 'T00:00:00Z', 'UTC')
+  const prevHref = `/dashboard/${formatMonthSegment(subMonths(utcViewed, 1) as unknown as Date)}`
+  const nextHref = `/dashboard/${formatMonthSegment(addMonths(utcViewed, 1) as unknown as Date)}`
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {

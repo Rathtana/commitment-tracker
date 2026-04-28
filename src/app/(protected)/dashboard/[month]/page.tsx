@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation"
 import { eq } from "drizzle-orm"
 import { addMonths, format, getDaysInMonth, isSameMonth, subMonths } from "date-fns"
+import { TZDate } from "@date-fns/tz"
 import { getSupabaseServerClient } from "@/lib/supabase/server"
 import { db } from "@/server/db"
 import { users } from "@/server/db/schema"
@@ -52,13 +53,19 @@ export default async function DashboardMonthPage({ params }: PageProps) {
   const viewedMonth = parseMonthSegment(parsed.data)
   const status = compareMonth(viewedMonth, currentMonth)
 
-  // D-06: future cap = current + 1 only
-  const nextAllowed = addMonths(currentMonth, 1)
-  if (status === "future" && !isSameMonth(viewedMonth, nextAllowed)) notFound()
+  // Use UTC-pinned dates for all display ops — plain Date at UTC midnight reads as
+  // the prior day in negative-offset timezones (e.g. PDT), causing month labels to
+  // appear one month behind.
+  const utcViewed = new TZDate(viewedMonth, "UTC")
+  const utcCurrent = new TZDate(currentMonth, "UTC")
 
-  const isNextDisabled = isSameMonth(viewedMonth, nextAllowed)
-  const monthYearLabel = format(viewedMonth, "MMMM yyyy")
-  const daysInMonth = getDaysInMonth(viewedMonth)
+  // D-06: future cap = current + 1 only
+  const nextAllowed = new TZDate(addMonths(utcCurrent, 1), "UTC")
+  if (status === "future" && !isSameMonth(utcViewed, nextAllowed)) notFound()
+
+  const isNextDisabled = isSameMonth(utcViewed, nextAllowed)
+  const monthYearLabel = format(utcViewed, "MMMM yyyy")
+  const daysInMonth = getDaysInMonth(utcViewed)
   const viewedIsoDate = viewedMonth.toISOString().slice(0, 10)
   const currentIsoDate = currentMonth.toISOString().slice(0, 10)
   const currentSegment = formatMonthSegment(currentMonth)
@@ -113,7 +120,7 @@ export default async function DashboardMonthPage({ params }: PageProps) {
       ) : goals.length === 0 && priorMonthHasGoals ? (
         <WelcomeToMonth
           monthYearLabel={monthYearLabel}
-          priorMonthLabel={format(subMonths(viewedMonth, 1), "MMMM")}
+          priorMonthLabel={format(new TZDate(subMonths(utcViewed, 1), "UTC"), "MMMM")}
           fallbackSlot={
             <EmptyState
               monthYearLabel={monthYearLabel}
