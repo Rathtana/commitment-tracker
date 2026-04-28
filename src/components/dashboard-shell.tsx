@@ -68,8 +68,15 @@ export function NewGoalButton({
   const [open, setOpen] = useState(false)
   return (
     <>
-      <Button size={size} onClick={() => setOpen(true)} className={className}>
-        <Plus className="mr-2 h-4 w-4" /> {label}
+      <Button
+        size={size}
+        onClick={() => setOpen(true)}
+        className={className}
+        aria-label={label}
+        title={label}
+      >
+        <Plus className="h-4 w-4" />
+        <span className="hidden md:inline">{label}</span>
       </Button>
       <CreateGoalDialog open={open} onOpenChange={setOpen} daysInMonthDefault={daysInMonthDefault} />
     </>
