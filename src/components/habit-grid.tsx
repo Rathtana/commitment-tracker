@@ -94,7 +94,7 @@ export function HabitGrid({ month, checkIns, now, userTz, onToggle, readOnly = f
               aria-pressed={isHit}
               title={cellTitle}
               className={cn(
-                'flex h-9 w-9 items-center justify-center rounded-md text-xs tabular-nums',
+                'flex h-11 w-11 items-center justify-center rounded-md text-xs tabular-nums',
                 // Hit cells: bg-primary (emerald) — NEVER red/destructive (PITFALLS §1 + UI-SPEC #6/#7)
                 isHit && !isToday && 'bg-primary text-primary-foreground',
                 // Miss cells: bg-muted (UNCHANGED — never red)

@@ -93,6 +93,7 @@ export function CountCard({ goal, now, userTz, handlers, variant = 'mutable', pr
               <Button
                 variant="outline"
                 size="icon"
+                className="h-11 w-11"
                 aria-label="Decrement stepper"
                 disabled={progressDisabled}
                 title={progressDisabled ? disabledTitle : undefined}
@@ -109,6 +110,7 @@ export function CountCard({ goal, now, userTz, handlers, variant = 'mutable', pr
               <Button
                 variant="outline"
                 size="icon"
+                className="h-11 w-11"
                 aria-label="Increment stepper"
                 disabled={progressDisabled}
                 title={progressDisabled ? disabledTitle : undefined}
@@ -117,7 +119,7 @@ export function CountCard({ goal, now, userTz, handlers, variant = 'mutable', pr
                 <Plus className="h-4 w-4" />
               </Button>
               {stepperValue !== 0 && !progressDisabled && (
-                <Button variant="outline" size="sm" onClick={commitStepper} aria-label="Commit stepper delta">
+                <Button variant="outline" size="sm" className="h-9" onClick={commitStepper} aria-label="Commit stepper delta">
                   Apply
                 </Button>
               )}
