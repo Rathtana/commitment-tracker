@@ -57,18 +57,22 @@ export function ReflectionCard({ monthIsoDate, monthYearLabel, initial }: Props)
       timeoutRef.current = null
     }
     startTransition(async () => {
-      const result = await upsertReflectionAction({
-        month: monthIsoDate,
-        whatWorked: ww,
-        whatDidnt: wd,
-      })
-      if (result.ok) {
-        const stamp = Date.now()
-        setSavedAt(stamp)
-        setTimeout(() => {
-          setSavedAt((current) => (current === stamp ? null : current))
-        }, 3000)
-      } else {
+      try {
+        const result = await upsertReflectionAction({
+          month: monthIsoDate,
+          whatWorked: ww,
+          whatDidnt: wd,
+        })
+        if (result.ok) {
+          const stamp = Date.now()
+          setSavedAt(stamp)
+          setTimeout(() => {
+            setSavedAt((current) => (current === stamp ? null : current))
+          }, 3000)
+        } else {
+          toast.error('Reflection not saved — check your connection')
+        }
+      } catch {
         toast.error('Reflection not saved — check your connection')
       }
     })
