@@ -90,7 +90,7 @@ export default async function DashboardMonthPage({ params }: PageProps) {
       {!isCurrent && (
         <Button
           variant="outline"
-          size="icon"
+          className="h-9 w-9 gap-1.5 md:w-auto md:px-3"
           aria-label="Return to this month"
           title="Return to this month"
           asChild
@@ -108,7 +108,7 @@ export default async function DashboardMonthPage({ params }: PageProps) {
         <Button
           type="submit"
           variant="outline"
-          size="icon"
+          className="h-9 w-9 gap-1.5 md:w-auto md:px-3"
           aria-label="Log out"
           title="Log out"
         >
