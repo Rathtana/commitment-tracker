@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: milestone
 status: ready-to-execute
 stopped_at: Phase 04 planned — 4 plans in 3 waves, verification passed, ready to execute
-last_updated: "2026-04-28T00:00:00.000Z"
-last_activity: 2026-04-28 -- Phase 04 planned (4 plans, 3 waves), all checks passed
+last_updated: "2026-05-04T04:30:00.000Z"
+last_activity: 2026-05-04 -- Completed quick task 260503-ter: Fix overlapping right-cluster buttons on dashboard header
 progress:
   total_phases: 4
   completed_phases: 3
@@ -134,6 +134,12 @@ None yet.
 
 - Research flag (Phase 1): Temporal API vs date-fns-tz choice + RLS policy shape for child tables joined via `goal_id` deserve a targeted research pass before migration is written
 - Research flag (Phase 2): Motion + shadcn Progress customization (replacing Radix indicator with `<motion.div>` for spring-physics width) needs a pattern pass to avoid CLS regression
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260503-ter | Fix overlapping right-cluster buttons on dashboard header | 2026-05-04 | 767e9c0 | [260503-ter-fix-overlapping-right-cluster-buttons-on](./quick/260503-ter-fix-overlapping-right-cluster-buttons-on/) |
 
 ## Deferred Items
 
