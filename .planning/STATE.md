@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: milestone
 status: ready-to-execute
 stopped_at: Phase 04 planned — 4 plans in 3 waves, verification passed, ready to execute
-last_updated: "2026-05-04T04:30:00.000Z"
-last_activity: 2026-05-04 -- Completed quick task 260503-ter: Fix overlapping right-cluster buttons on dashboard header
+last_updated: "2026-05-06T03:40:00.000Z"
+last_activity: 2026-05-06 -- Completed quick task 260505-siz: Drop NEXT_PUBLIC_SUPABASE_ANON_KEY fallback chain
 progress:
   total_phases: 4
   completed_phases: 3
@@ -140,6 +140,7 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260503-ter | Fix overlapping right-cluster buttons on dashboard header | 2026-05-04 | 767e9c0 | [260503-ter-fix-overlapping-right-cluster-buttons-on](./quick/260503-ter-fix-overlapping-right-cluster-buttons-on/) |
+| 260505-siz | Drop NEXT_PUBLIC_SUPABASE_ANON_KEY fallback chain (single source of truth on PUBLISHABLE_KEY) | 2026-05-06 | 0ca912f | [260505-siz-drop-next-public-supabase-anon-key-fallb](./quick/260505-siz-drop-next-public-supabase-anon-key-fallb/) |
 
 ## Deferred Items
 
