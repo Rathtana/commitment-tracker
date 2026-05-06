@@ -9,16 +9,14 @@ import { createServerClient } from "@supabase/ssr"
  * Critical: uses the getAll/setAll cookie pattern (not get/set/remove),
  * which @supabase/ssr 0.10 requires for token refresh to persist.
  *
- * Reads NEXT_PUBLIC_SUPABASE_ANON_KEY (canonical in plan docs) with
- * NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY as fallback — both point at the
- * same sb_publishable_* value per Plan 01-01 decision.
+ * Reads NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY — the canonical Supabase
+ * publishable key (sb_publishable_*). ANON_KEY was retired in favor of
+ * PUBLISHABLE_KEY upstream.
  */
 export async function getSupabaseServerClient() {
   const cookieStore = await cookies()
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const supabaseKey =
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
 
   return createServerClient(supabaseUrl, supabaseKey, {
     cookies: {
